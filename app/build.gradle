@@ -7,6 +7,19 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
+    // switch to v26 if it still does not work
+    // - earlier app breaks at an even later version
+    // https://stackoverflow.com/a/50198499/4420543
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // https://stackoverflow.com/a/56996020/4420543
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
     defaultConfig {
         applicationId "stoyck.vitrina"
         minSdkVersion 23
@@ -47,6 +60,12 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
+    implementation 'androidx.navigation:navigation-ui:2.3.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'
+
+    // something automatically added for a layout
+    implementation 'com.google.android.material:material:1.1.0'
 
     // DI
     implementation "com.google.dagger:dagger:2.28.3"

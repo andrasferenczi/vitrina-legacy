@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">vitrina</string>
 
+    <string name="main_screen_title">Subreddits</string>
+    <string name="subreddit_input_field_hint">subreddit name</string>
+
+    <string name="action_search">Search</string>
     <string name="action_settings">Settings</string>
 
     <string name="nav_header_title">Android Studio</string>

@@ -4,6 +4,9 @@
     <string name="main_screen_title">Subreddits</string>
     <string name="subreddit_input_field_hint">subreddit name</string>
 
+    <string name="settings_shuffle_option">Shuffle</string>
+    <string name="settings_over18_option">Over 18</string>
+
     <string name="action_search">Search</string>
     <string name="action_settings">Settings</string>
 

@@ -7,12 +7,12 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/settingsShuffle"
-            android:title="Shuffle"
+            android:title="@string/settings_shuffle_option"
             app:actionViewClass="android.widget.Switch"
             />
         <item
             android:id="@+id/settingsOver18"
-            android:title="Over 18"
+            android:title="@string/settings_over18_option"
             app:actionViewClass="android.widget.Switch"
             />
     </group>

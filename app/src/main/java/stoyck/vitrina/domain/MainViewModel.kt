@@ -3,6 +3,7 @@ package stoyck.vitrina.domain
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import stoyck.vitrina.domain.preferences.PreferencesData
+import stoyck.vitrina.ui.SubredditSuggestionData
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -39,6 +40,13 @@ class MainViewModel @Inject constructor(
 
     val menuState: LiveData<MenuState> = _menuState
 
+    private val _subredditSuggestions: MutableLiveData<List<SubredditSuggestionData>> =
+        MutableLiveData(
+            ArrayList()
+        )
+
+    val subredditSuggestions: LiveData<List<SubredditSuggestionData>> = _subredditSuggestions
+
     //
 
     fun toDefaultMenu() {
@@ -55,7 +63,10 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateSuggestionList(text: String) {
-
+        _subredditSuggestions.value = listOf(
+            SubredditSuggestionData(name = text + "_what"),
+            SubredditSuggestionData(name = text + "this")
+        )
     }
 
     fun tryAddSubreddit(text: String) {

@@ -10,6 +10,8 @@ import androidx.core.view.GravityCompat
 import androidx.lifecycle.observe
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.content_subreddit_suggestion.*
 import stoyck.vitrina.domain.MainViewModel
 import stoyck.vitrina.util.DebouncedTextWatcher
 import stoyck.vitrina.util.hideKeyboard
@@ -35,6 +37,10 @@ class MainActivity : AppCompatActivity() {
                 MainViewModel.MenuState.Default -> renderDefaultState()
                 MainViewModel.MenuState.Search -> renderSearchState()
             }
+        }
+
+        viewModel.subredditSuggestions.observe(this) {
+            subredditSuggestionRecyclerView.setData(it)
         }
 
         setupSettings()
@@ -94,7 +100,7 @@ class MainActivity : AppCompatActivity() {
                         viewModel.updateSuggestionList(text)
                     })
 
-                subredditInputText.setOnEditorActionListener { view, id, event->
+                subredditInputText.setOnEditorActionListener { view, id, event ->
                     val text = view.text.toString()
                     viewModel.tryAddSubreddit(text)
                     true
@@ -103,6 +109,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         //
+        contentMainContainer.visibility = View.GONE
+        contentSubredditSuggestionContainer.visibility = View.VISIBLE
 
         invalidateOptionsMenu()
 
@@ -139,6 +147,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         //
+        contentMainContainer.visibility = View.VISIBLE
+        contentSubredditSuggestionContainer.visibility = View.GONE
 
         invalidateOptionsMenu()
 

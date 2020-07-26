@@ -17,8 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            android:visibility="visible"/>
+            android:visibility="visible"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
 
         <!-- Gone, not visible -->
@@ -27,30 +27,36 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            android:visibility="gone">
+            android:visibility="gone"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <EditText
                 android:id="@+id/subredditInputText"
-                android:singleLine="true"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="?attr/colorPrimary"
-                android:imeOptions="actionDone"
                 android:hint="@string/subreddit_input_field_hint"
-                android:importantForAutofill="no" />
+                android:imeOptions="actionDone"
+                android:importantForAutofill="no"
+                android:singleLine="true" />
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+    <include
+        layout="@layout/content_main"
+        android:visibility="visible" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/addSubredditFab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@drawable/ic_add" />
+    <include
+        layout="@layout/content_subreddit_suggestion"
+        android:visibility="gone" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addSubredditFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@drawable/ic_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

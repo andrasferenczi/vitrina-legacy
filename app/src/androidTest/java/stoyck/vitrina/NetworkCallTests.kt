@@ -36,4 +36,24 @@ class NetworkCallTests {
         // Capitalization is fixed
         Assert.assertEquals(subreddit.displayName, "EarthPorn")
     }
+
+    @Test
+    fun postsRetrievalWorks() {
+        val subreddit = runBlocking {
+            redditService.retrieveImagePosts("earthporn")
+        }
+
+        // Capitalization is fixed
+        Assert.assertEquals(subreddit.size, 10)
+    }
+
+    @Test
+    fun subredditRecommendationRetrievalWorks() {
+        val subreddit = runBlocking {
+            redditService.retrieveHints("earthporn")
+        }
+
+        // Capitalization is fixed
+        Assert.assertEquals(subreddit.size, 2)
+    }
 }

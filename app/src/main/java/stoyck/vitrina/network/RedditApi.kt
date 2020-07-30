@@ -9,6 +9,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import stoyck.vitrina.network.data.RedditAboutPage
 import stoyck.vitrina.network.data.RedditPostPage
+import stoyck.vitrina.network.data.SubredditSuggestionPage
 
 interface RedditApi {
 
@@ -20,8 +21,16 @@ interface RedditApi {
     @GET("/r/{$SUBREDDIT}.json")
     suspend fun getPosts(
         @Path(SUBREDDIT) subreddit: String,
-        @Query("limit") limit: Int
+        @Query("limit") limit: Int? = null
     ): RedditPostPage
+
+    @GET("/subreddits.json")
+    suspend fun getSubreddits(
+        @Query("q") query: String,
+        @Query("limit") limit: Int? = null,
+        @Query("count") count: Int? = null,
+        @Query("sort") sort: String = "relevance"
+    ): SubredditSuggestionPage
 
     companion object {
         private const val SUBREDDIT = "subreddit"
@@ -37,9 +46,6 @@ interface RedditApi {
 
             val retrofit = Retrofit.Builder()
                 .baseUrl("https://www.reddit.com")
-//                    .addCallAdapterFactory(
-//                            RxJava2CallAdapterFactory.create()
-//                    )
                 .addConverterFactory(
                     GsonConverterFactory.create()
                 )

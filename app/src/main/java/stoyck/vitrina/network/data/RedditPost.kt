@@ -30,7 +30,7 @@ data class RedditPost(
     val subredditId: String = "",
     @SerializedName("post_hint")
     @Expose
-    val postHint: String = "",
+    val postHint: PostHint = PostHint.Other,
     @SerializedName("stickied")
     @Expose
     val stickied: Boolean = false,

@@ -27,7 +27,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "stoyck.vitrina.VitrinaTestRunner"
     }
 
     buildTypes {
@@ -71,10 +71,21 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
 
     // DI
-    implementation "com.google.dagger:dagger:2.28.3"
-    implementation "com.google.dagger:dagger-android-support:2.28.3"
-    kapt "com.google.dagger:dagger-compiler:2.28.3"
-    kapt "com.google.dagger:dagger-android-processor:2.28.3"
+    implementation 'com.google.dagger:dagger:2.28.3'
+    implementation 'com.google.dagger:dagger-android-support:2.28.3'
+    kapt 'com.google.dagger:dagger-compiler:2.28.3'
+    kapt 'com.google.dagger:dagger-android-processor:2.28.3'
+    // This kaptTest stuff started working like this, don't touch
+    // Also: gradle build does not generate tests !!!
+    //
+    // Comment of https://stackoverflow.com/a/36231516/4420543
+    //      Remember to execute the tests or run assembleAndroidTest
+    //      to actually see the dependency class DaggerMyComponent resolved,
+    //      simply rebuild will not generate the classes from dagger.
+    kaptTest 'com.google.dagger:dagger-compiler:2.28.3'
+    kaptTest 'com.google.dagger:dagger-android-processor:2.28.3'
+    kaptAndroidTest 'com.google.dagger:dagger-compiler:2.28.3'
+    kaptAndroidTest 'com.google.dagger:dagger-android-processor:2.28.3'
 
     // network
     implementation 'com.squareup.okhttp3:logging-interceptor:4.8.0'

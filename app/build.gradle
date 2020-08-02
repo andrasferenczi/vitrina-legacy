@@ -92,28 +92,6 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
 
-    // rx for simpler ui instead livedata
-    implementation 'io.reactivex.rxjava3:rxkotlin:3.0.0'
-    implementation 'io.reactivex.rxjava3:rxkotlin:3.0.0'
-    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
-    // Do not use rx in view layer, cannot retrieve current value simply without blocking ui
-    // needed to unsubscribe properly
-    implementation 'com.trello.rxlifecycle4:rxlifecycle-kotlin:4.0.0'
-    implementation 'com.trello.rxlifecycle4:rxlifecycle-android-lifecycle-kotlin:4.0.0'
-
-    implementation 'com.jakewharton.rxbinding4:rxbinding:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-core:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-appcompat:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-drawerlayout:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-leanback:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-recyclerview:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-slidingpanelayout:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-swiperefreshlayout:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-viewpager:4.0.0'
-    implementation 'com.jakewharton.rxbinding4:rxbinding-viewpager2:4.0.0'
-    //
-    implementation 'com.jakewharton.rxbinding4:rxbinding-material:4.0.0'
-
     // ====
     // test
     testImplementation 'junit:junit:4.12'

@@ -2,6 +2,7 @@ package stoyck.vitrina.di.app
 
 import dagger.Component
 import stoyck.vitrina.NetworkCallTests
+import stoyck.vitrina.di.modules.LoggerModule
 import stoyck.vitrina.di.modules.NetworkModule
 import javax.inject.Singleton
 
@@ -9,7 +10,8 @@ import javax.inject.Singleton
 @Component(
     modules = [
         ApplicationModule::class,
-        NetworkModule::class
+        NetworkModule::class,
+        LoggerModule::class
     ]
 )
 interface TestApplicationComponent : ApplicationComponent {

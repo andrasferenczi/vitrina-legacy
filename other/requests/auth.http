@@ -7,13 +7,13 @@
 # https://i.imgur.com/ILMeklr.png
 
 # client id: Cz3RfZHd1xgl2g
-# plus : (colon for empty password)
+# plus : (colon for empty password - optionally a space can be added)
 # encoded: Q3ozUmZaSGQxeGdsMmc6
 
 POST https://www.reddit.com/api/v1/access_token
 User-Agent: 0.1 by randomTest
 Content-Type: application/x-www-form-urlencoded
-Authorization: Basic Q3ozUmZaSGQxeGdsMmc6
+Authorization: Basic Q3ozUmZaSGQxeGdsMmc6IA==
 
 grant_type=https://oauth.reddit.com/grants/installed_client&device_id=DO_NOT_TRACK_THIS_DEVICE
 

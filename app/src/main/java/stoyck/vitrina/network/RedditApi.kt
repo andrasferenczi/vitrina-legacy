@@ -1,17 +1,21 @@
 package stoyck.vitrina.network
 
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
-import stoyck.vitrina.network.data.RedditAboutPage
-import stoyck.vitrina.network.data.RedditPostPage
-import stoyck.vitrina.network.data.SubredditSuggestionPage
+import retrofit2.http.*
+import stoyck.vitrina.network.data.*
 
 interface RedditApi {
+
+    @FormUrlEncoded
+    @POST("/api/v1/access_token")
+    suspend fun getAccessToken(
+        @Header("authorization") authorization: String,
+        @Field("grant_type") grantType: String = "https://oauth.reddit.com/grants/installed_client",
+        @Field("device_id") deviceId: String = "DO_NOT_TRACK_THIS_DEVICE"
+    ): RedditAuthorizationResponse
 
     @GET("/r/{$SUBREDDIT}/about.json")
     suspend fun getAbout(
@@ -32,16 +36,26 @@ interface RedditApi {
         @Query("sort") sort: String = "relevance"
     ): SubredditSuggestionPage
 
+    @GET("/api/search_reddit_names.json")
+    suspend fun searchRedditNames(
+        @Query("query") query: String,
+        @Query("exact") exact: Boolean? = null,
+        @Query("include_over_18") includeOver18: Boolean? = null,
+        @Query("include_unadvertisable") includeUnadvertisable: Boolean? = null,
+        @Query("typeahead_active") sort: Boolean? = null
+    ): SearchRedditNamesResult
+
     companion object {
         private const val SUBREDDIT = "subreddit"
 
-        fun create(modifier: (builder: Retrofit.Builder) -> Unit = {}): RedditApi {
-            val interceptor: HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
-                this.level = HttpLoggingInterceptor.Level.BODY
-            }
-
+        fun create(
+            interceptors: List<Interceptor>,
+            modifier: (builder: Retrofit.Builder) -> Unit = {}
+        ): RedditApi {
             val client: OkHttpClient = OkHttpClient.Builder().apply {
-                this.addInterceptor(interceptor)
+                interceptors.forEach {
+                    this.addInterceptor(it)
+                }
             }.build()
 
             val retrofit = Retrofit.Builder()

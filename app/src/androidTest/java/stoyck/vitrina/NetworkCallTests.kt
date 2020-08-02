@@ -28,13 +28,26 @@ class NetworkCallTests {
     }
 
     @Test
+    fun retrieveAccessToken() {
+        val token = runBlocking {
+            redditService.retrieveAccessToken()
+        }
+
+        // Testing the constant values
+        Assert.assertEquals("bearer", token.tokenType)
+        Assert.assertEquals("DO_NOT_TRACK_THIS_DEVICE", token.deviceId)
+        Assert.assertEquals(3600, token.expiresIn)
+        Assert.assertEquals("*", token.scope)
+    }
+
+    @Test
     fun subredditRetrievalWorks() {
         val subreddit = runBlocking {
             redditService.retrieveSubreddit("earthporn")
         }
 
         // Capitalization is fixed
-        Assert.assertEquals(subreddit.displayName, "EarthPorn")
+        Assert.assertEquals("EarthPorn", subreddit.displayName)
     }
 
     @Test
@@ -49,11 +62,16 @@ class NetworkCallTests {
 
     @Test
     fun subredditRecommendationRetrievalWorks() {
-        val subreddit = runBlocking {
-            redditService.retrieveHints("earthporn")
+        val query = "earthporn"
+
+        val subredditNames = runBlocking {
+            redditService.retrieveHints(query = query)
         }
 
-        // Capitalization is fixed
-        Assert.assertEquals(subreddit.size, 2)
+        Assert.assertTrue(subredditNames.isNotEmpty())
+
+        subredditNames.forEach {
+            Assert.assertTrue("Subreddit $it", it.startsWith(query, ignoreCase = true))
+        }
     }
 }

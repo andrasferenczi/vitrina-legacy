@@ -1,0 +1,30 @@
+# Use this file only with IntelliJ Idea Ultimate
+
+###
+# Getting an accesstoken:
+# Authorization should be 'Basic *client id*:'
+# watch the colon after the client id (which should be base64 encoded)
+# https://i.imgur.com/ILMeklr.png
+
+# client id: Cz3RfZHd1xgl2g
+# plus : (colon for empty password)
+# encoded: Q3ozUmZaSGQxeGdsMmc6
+
+POST https://www.reddit.com/api/v1/access_token
+User-Agent: 0.1 by randomTest
+Content-Type: application/x-www-form-urlencoded
+Authorization: Basic Q3ozUmZaSGQxeGdsMmc6
+
+grant_type=https://oauth.reddit.com/grants/installed_client&device_id=DO_NOT_TRACK_THIS_DEVICE
+
+###
+# Fetching using the access_token from the previous request
+
+GET https://oauth.reddit.com/r/earthporn/top?limit=1
+User-Agent: 0.1 by randomTest
+Authorization: Bearer -ts2ePznYkf0l828Y0GZr_AFZzWk
+
+###
+POST https://oauth.reddit.com/api/search_subreddits.json?query=earth
+User-Agent: 0.1 by randomTest
+Authorization: Bearer -ts2ePznYkf0l828Y0GZr_AFZzWk

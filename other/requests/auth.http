@@ -28,3 +28,15 @@ Authorization: Bearer -ts2ePznYkf0l828Y0GZr_AFZzWk
 POST https://oauth.reddit.com/api/search_subreddits.json?query=earth
 User-Agent: 0.1 by randomTest
 Authorization: Bearer -ts2ePznYkf0l828Y0GZr_AFZzWk
+
+###
+# Calling the endpoint that does not have authorization
+GET https://www.reddit.com/r/earthporn/about.json
+User-Agent: 0.1 by randomTest
+
+###
+# Calling the endpoint with authorization
+GET https://oauth.reddit.com/r/earthporn/about.json
+User-Agent: 0.1 by randomTest
+Authorization: Bearer -7osMLEIWMxdNx1t2yY7IDJaynkY
+

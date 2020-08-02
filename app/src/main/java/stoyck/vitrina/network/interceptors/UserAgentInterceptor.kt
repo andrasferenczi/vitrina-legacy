@@ -1,4 +1,4 @@
-package stoyck.vitrina.network
+package stoyck.vitrina.network.interceptors
 
 import okhttp3.Interceptor
 import okhttp3.Response

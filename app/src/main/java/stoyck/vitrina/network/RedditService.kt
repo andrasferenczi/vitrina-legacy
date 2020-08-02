@@ -11,7 +11,9 @@ import javax.inject.Singleton
 
 @Singleton
 class RedditService @Inject constructor(
-    private val redditApi: RedditApi,
+    private val publicApi: RedditPublicApi,
+    private val oauthApi: RedditOauthApi,
+    private val bearerBearerTokenWrapper: BearerTokenWrapper,
     @Named("reddit_client_id")
     private val clientId: String
 ) {
@@ -26,16 +28,27 @@ class RedditService @Inject constructor(
 
     @VisibleForTesting
     suspend fun retrieveAccessToken(): RedditAuthorizationResponse {
-        return redditApi.getAccessToken(authorization = authorization)
+        return publicApi.getAccessToken(authorization = authorization)
+    }
+
+    private suspend fun ensureBearerTokenExists() {
+        if (bearerBearerTokenWrapper.isTokenValid) {
+            return
+        }
+
+        val token = retrieveAccessToken()
+        bearerBearerTokenWrapper.authorization = token
     }
 
     suspend fun retrieveSubreddit(subreddit: String): RedditAbout {
-        val page = redditApi.getAbout(subreddit = subreddit)
+        ensureBearerTokenExists()
+        val page = oauthApi.getAbout(subreddit = subreddit)
         return page.data
     }
 
     suspend fun retrieveImagePosts(subreddit: String): List<RedditPost> {
-        val result = redditApi.getPosts(
+        ensureBearerTokenExists()
+        val result = oauthApi.getPosts(
             subreddit = subreddit,
             limit = 50
         )
@@ -50,7 +63,8 @@ class RedditService @Inject constructor(
     }
 
     suspend fun retrieveHints(query: String): List<String> {
-        val result = redditApi.searchRedditNames(query = query)
+        ensureBearerTokenExists()
+        val result = oauthApi.searchRedditNames(query = query)
         return result.names
     }
 

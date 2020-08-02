@@ -64,14 +64,14 @@ class NetworkCallTests {
     fun subredditRecommendationRetrievalWorks() {
         val query = "earthporn"
 
-        val subredditNames = runBlocking {
+        val subreddits = runBlocking {
             redditService.retrieveHints(query = query)
         }
 
-        Assert.assertTrue(subredditNames.isNotEmpty())
+        Assert.assertTrue(subreddits.isNotEmpty())
 
-        subredditNames.forEach {
-            Assert.assertTrue("Subreddit $it", it.startsWith(query, ignoreCase = true))
+        subreddits.forEach {
+            Assert.assertTrue("Subreddit $it", it.name.startsWith(query, ignoreCase = true))
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.annotation.VisibleForTesting
 import stoyck.vitrina.network.data.RedditAbout
 import stoyck.vitrina.network.data.RedditAuthorizationResponse
 import stoyck.vitrina.network.data.RedditPost
+import stoyck.vitrina.ui.SubredditSuggestionData
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -62,10 +63,15 @@ class RedditService @Inject constructor(
             .toList()
     }
 
-    suspend fun retrieveHints(query: String): List<String> {
+    suspend fun retrieveHints(query: String): List<SubredditSuggestionData> {
         ensureBearerTokenExists()
-        val result = oauthApi.searchRedditNames(query = query)
-        return result.names
+        val result = oauthApi.searchSubreddits(query = query)
+        return result.subreddits.map {
+            SubredditSuggestionData(
+                name = it.name,
+                subscriberCount = it.subscriberCount
+            )
+        }
     }
 
 }

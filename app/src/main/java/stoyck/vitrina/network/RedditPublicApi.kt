@@ -1,7 +1,10 @@
 package stoyck.vitrina.network
 
 import retrofit2.http.*
-import stoyck.vitrina.network.data.*
+import stoyck.vitrina.network.data.RedditAboutPage
+import stoyck.vitrina.network.data.RedditAuthorizationResponse
+import stoyck.vitrina.network.data.RedditPostPage
+import stoyck.vitrina.network.data.SubredditSuggestionPage
 
 /**
  * Endpoints that are reachable without any token
@@ -37,14 +40,4 @@ interface RedditPublicApi {
         @Query("count") count: Int? = null,
         @Query("sort") sort: String = "relevance"
     ): SubredditSuggestionPage
-
-    @Deprecated("Please use the oauth endpoint")
-    @GET("/api/search_reddit_names.json")
-    suspend fun searchRedditNames(
-        @Query("query") query: String,
-        @Query("exact") exact: Boolean? = null,
-        @Query("include_over_18") includeOver18: Boolean? = null,
-        @Query("include_unadvertisable") includeUnadvertisable: Boolean? = null,
-        @Query("typeahead_active") sort: Boolean? = null
-    ): SearchRedditNamesResult
 }

@@ -15,11 +15,11 @@ class VitrinaPersistence
     context: Context
 ) : SimpleKrate(context) {
 
-    val shuffle by booleanPref("shuffle", false)
+    var shuffle by booleanPref("shuffle", false)
 
-    val over18 by booleanPref("over18", false)
+    var over18 by booleanPref("over18", false)
 
-    val subreddits by gsonPref<List<PersistedSubredditData>>("subreddits", emptyList())
+    var subreddits by gsonPref<List<PersistedSubredditData>>("subreddits", emptyList())
 
-    val previousPosts by gsonPref<List<PersistedPostData>>("posts", emptyList())
+    var previousPosts by gsonPref<List<PersistedPostData>>("posts", emptyList())
 }

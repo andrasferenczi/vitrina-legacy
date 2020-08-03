@@ -2,6 +2,7 @@ package stoyck.vitrina.di.app
 
 import dagger.Component
 import stoyck.vitrina.NetworkCallTests
+import stoyck.vitrina.UseCaseTests
 import stoyck.vitrina.di.modules.LoggerModule
 import stoyck.vitrina.di.modules.NetworkModule
 import javax.inject.Singleton
@@ -16,4 +17,6 @@ import javax.inject.Singleton
 )
 interface TestApplicationComponent : ApplicationComponent {
     fun inject(test: NetworkCallTests)
+
+    fun inject(test: UseCaseTests)
 }

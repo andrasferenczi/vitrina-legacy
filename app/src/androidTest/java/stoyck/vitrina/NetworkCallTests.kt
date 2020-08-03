@@ -51,13 +51,25 @@ class NetworkCallTests {
     }
 
     @Test
-    fun postsRetrievalWorks() {
+    fun mutlipleSubredditRetrievalWorks() {
+        val subreddits = listOf(
+            "earthporn",
+            "cityporn",
+            "spaceporn"
+        )
+
         val subreddit = runBlocking {
-            redditService.retrieveImagePosts("earthporn")
+            redditService.retrievePosts(subreddits)
         }
 
         // Capitalization is fixed
-        Assert.assertEquals(subreddit.size, 10)
+        Assert.assertEquals(subreddit.size, 100)
+
+        val sources = subreddit.map { it.subreddit.toLowerCase() }.toSet()
+        Assert.assertTrue(
+            "Should container more than 1 type of subreddit",
+            sources.size > 1 && sources.size <= subreddits.size
+        )
     }
 
     @Test

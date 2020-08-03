@@ -47,20 +47,18 @@ class RedditService @Inject constructor(
         return page.data
     }
 
-    suspend fun retrieveImagePosts(subreddit: String): List<RedditPost> {
+    suspend fun retrievePosts(subreddits: List<String>): List<RedditPost> {
+        return retrievePosts(subreddits.joinToString(separator = "+"))
+    }
+
+    suspend fun retrievePosts(subreddit: String): List<RedditPost> {
         ensureBearerTokenExists()
         val result = oauthApi.getPosts(
             subreddit = subreddit,
-            limit = 50
+            limit = 100
         )
 
-        val posts = result.data.children.map { it.data }
-
-        return posts
-            .asSequence()
-            .filter { !it.stickied }
-            .filter { it.subreddit.equals(subreddit, ignoreCase = true) }
-            .toList()
+        return result.data.children.map { it.data }
     }
 
     suspend fun retrieveHints(query: String): List<SubredditSuggestionData> {

@@ -61,9 +61,15 @@ class RedditService @Inject constructor(
         return result.data.children.map { it.data }
     }
 
-    suspend fun retrieveHints(query: String): List<SubredditSuggestionData> {
+    suspend fun retrieveHints(
+        query: String,
+        includeOver18: Boolean = false
+    ): List<SubredditSuggestionData> {
         ensureBearerTokenExists()
-        val result = oauthApi.searchSubreddits(query = query)
+        val result = oauthApi.searchSubreddits(
+            query = query,
+            includeOver18 = includeOver18
+        )
         return result.subreddits.map {
             SubredditSuggestionData(
                 name = it.name,

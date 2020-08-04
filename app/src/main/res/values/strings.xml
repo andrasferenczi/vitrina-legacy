@@ -15,6 +15,8 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
 
+    <string name="members">%1$s members</string>
+
     <string name="error_no_idea">Something went wrong</string>
     <string name="error_no_internet">No internet available</string>
     <string name="error_subreddit_does_not_exist">Subreddit [%1$s] could not be found</string>

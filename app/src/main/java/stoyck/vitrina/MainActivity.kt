@@ -8,6 +8,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.observe
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -15,7 +16,6 @@ import kotlinx.android.synthetic.main.content_subreddit_suggestion.*
 import stoyck.vitrina.domain.MainViewModel
 import stoyck.vitrina.util.DebouncedTextWatcher
 import stoyck.vitrina.util.hideKeyboard
-import java.lang.RuntimeException
 import javax.inject.Inject
 
 
@@ -43,11 +43,23 @@ class MainActivity : AppCompatActivity() {
             subredditSuggestionRecyclerView.setData(it)
         }
 
+        subredditSuggestionRecyclerView.onSubredditSuggestionClicked = { subredditToAdd ->
+            toDefaultMenu()
+            viewModel.tryAddSubreddit(subredditToAdd.name)
+        }
+
         setupSettings()
+
+        viewModel.isLoading.observe(this) { loading ->
+            mainProgressBar.visibility = if (loading) View.VISIBLE else View.GONE
+        }
+
+        showSnackbar("Test is this very is")
     }
 
     private fun toDefaultMenu() {
         hideKeyboard()
+        subredditInputText.setText("")
         viewModel.toDefaultMenu()
     }
 
@@ -203,5 +215,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         super.onBackPressed()
+    }
+
+
+    fun showSnackbar(message: String) {
+        Snackbar.make(contentMainContainer, message, Snackbar.LENGTH_LONG)
+            .setAction("CLOSE") { }
+            .setActionTextColor(resources.getColor(android.R.color.holo_red_light))
+            .show()
     }
 }

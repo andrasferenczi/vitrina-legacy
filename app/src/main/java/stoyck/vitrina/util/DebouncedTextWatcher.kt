@@ -2,30 +2,26 @@ package stoyck.vitrina.util
 
 import android.text.Editable
 import android.text.TextWatcher
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlin.coroutines.CoroutineContext
 
 class DebouncedTextWatcher(
-    private val delayMillis: Long,
+    delayMillis: Long,
     private val debouncedAction: (text: String) -> Unit
 ) : TextWatcher, CoroutineScope {
 
-    private var searchFor = ""
-
     override val coroutineContext: CoroutineContext = Dispatchers.Main + SupervisorJob()
+
+    private val debouncer = Debouncer(
+        delayMillis = delayMillis
+    )
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         val searchText = s.toString().trim()
-        if (searchText == searchFor)
-            return
 
-        searchFor = searchText
-
-        launch {
-            delay(delayMillis)  //debounce timeOut
-            if (searchText != searchFor)
-                return@launch
-
+        debouncer {
             debouncedAction(searchText)
         }
     }

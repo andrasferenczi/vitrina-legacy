@@ -4,14 +4,33 @@
     android:id="@+id/suggestionContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center|start">
+    android:gravity="center|start"
+    android:background="?selectableItemBackground">
 
-    <TextView
-        android:id="@+id/suggestionName"
-        android:layout_width="wrap_content"
+    <!-- Padded text view -->
+    <LinearLayout
+        android:layout_marginStart="@dimen/screen_left_to_toolbar_text_start"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:textSize="18dp"
-        tools:text="earthPorn" />
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/spacing__2"
+        android:layout_marginBottom="@dimen/spacing__2"
+        >
+
+        <TextView
+            android:id="@+id/subredditName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/typography__body"
+            tools:text="earthPorn" />
+
+        <TextView
+            android:id="@+id/subscriberCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/typography__subtitle"
+            tools:text="earthPorn" />
+
+    </LinearLayout>
 
 </LinearLayout>

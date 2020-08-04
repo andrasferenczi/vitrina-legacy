@@ -43,13 +43,40 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include
-        layout="@layout/content_main"
-        android:visibility="visible" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <include
-        layout="@layout/content_subreddit_suggestion"
-        android:visibility="gone" />
+        <include
+            layout="@layout/content_main"
+            android:visibility="visible" />
+
+        <include
+            layout="@layout/content_subreddit_suggestion"
+            android:visibility="gone" />
+
+        <!-- Progressbar and fixing spacing -->
+        <FrameLayout
+            android:clickable="false"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ProgressBar
+                android:id="@+id/mainProgressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_marginTop="-6dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:paddingTop="0dp" />
+
+        </FrameLayout>
+
+    </RelativeLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addSubredditFab"

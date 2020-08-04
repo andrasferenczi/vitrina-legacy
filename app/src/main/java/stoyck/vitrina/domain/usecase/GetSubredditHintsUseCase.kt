@@ -7,11 +7,17 @@ import javax.inject.Singleton
 
 @Singleton
 class GetSubredditHintsUseCase @Inject constructor(
-    private val network: RedditService
+    private val network: RedditService,
+    private val loadSettings: LoadSettingsUseCase
 ) {
 
     suspend operator fun invoke(partialSubredditName: String): List<SubredditSuggestionData> {
-        return network.retrieveHints(partialSubredditName)
+        val settings = loadSettings()
+
+        return network.retrieveHints(
+            query = partialSubredditName,
+            includeOver18 = settings.isOver18
+        )
     }
 
 }

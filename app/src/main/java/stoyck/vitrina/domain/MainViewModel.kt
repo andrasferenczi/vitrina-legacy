@@ -2,7 +2,13 @@ package stoyck.vitrina.domain
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
+import kotlinx.coroutines.*
 import stoyck.vitrina.domain.preferences.PreferencesData
+import stoyck.vitrina.domain.usecase.GetSubredditHintsUseCase
+import stoyck.vitrina.domain.usecase.LoadSettingsUseCase
+import stoyck.vitrina.domain.usecase.SaveSettingsUseCase
+import stoyck.vitrina.domain.usecase.TryAddSubredditUseCase
 import stoyck.vitrina.ui.SubredditSuggestionData
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,8 +21,17 @@ import javax.inject.Singleton
  */
 @Singleton
 class MainViewModel @Inject constructor(
-
+    // Use case names added to the end, because
+    private val getSubredditHintsUseCase: GetSubredditHintsUseCase,
+    private val tryAddSubredditUseCase: TryAddSubredditUseCase,
+    private val loadSettingsUseCase: LoadSettingsUseCase,
+    private val saveSettingsUseCase: SaveSettingsUseCase
 ) {
+
+    private val job = Dispatchers.IO + SupervisorJob()
+
+    private val scope = CoroutineScope(job)
+
     enum class MenuState {
         /**
          * Actions where search and settings can be triggered
@@ -47,6 +62,32 @@ class MainViewModel @Inject constructor(
 
     val subredditSuggestions: LiveData<List<SubredditSuggestionData>> = _subredditSuggestions
 
+    private val _loadingCount = MutableLiveData(0)
+
+    val isLoading: LiveData<Boolean> = _loadingCount.map { it!! > 0 }
+
+    private suspend fun withLoading(
+        block: suspend () -> Unit
+    ) {
+        try {
+            withContext(Dispatchers.Main) {
+                _loadingCount.value = _loadingCount.value!! + 1
+            }
+
+            block()
+        } catch (e: Exception) {
+            throw e
+        } finally {
+            withContext(Dispatchers.Main) {
+                _loadingCount.value = _loadingCount.value!! - 1
+            }
+        }
+    }
+
+    init {
+        loadSettings()
+    }
+
     //
 
     fun toDefaultMenu() {
@@ -57,20 +98,55 @@ class MainViewModel @Inject constructor(
         _menuState.value = MenuState.Search
     }
 
+    private fun loadSettings() {
+        scope.launch {
+            val data = loadSettingsUseCase()
+
+            withContext(Dispatchers.Main) {
+                _preferencesState.value = data
+            }
+        }
+    }
+
     fun updatePreferences(data: PreferencesData) {
-        // todo: save
-        this._preferencesState.value = data
+        scope.launch {
+            saveSettingsUseCase(data)
+
+            withContext(Dispatchers.Main) {
+                _preferencesState.value = data
+            }
+        }
     }
 
     fun updateSuggestionList(text: String) {
-        _subredditSuggestions.value = listOf(
-            SubredditSuggestionData(name = text + "_what"),
-            SubredditSuggestionData(name = text + "this")
-        )
+        if (text.isBlank()) {
+            _subredditSuggestions.value = emptyList()
+            return
+        }
+
+        scope.launch {
+            withLoading {
+                val suggestions = getSubredditHintsUseCase(
+                    partialSubredditName = text
+                )
+
+                withContext(Dispatchers.Main) {
+                    _subredditSuggestions.value = suggestions
+                }
+            }
+        }
     }
 
-    fun tryAddSubreddit(text: String) {
-
+    fun tryAddSubreddit(subreddit: String) {
+        scope.launch {
+//            val result = tryAddSubredditUseCase(
+//                requestedSubredditName = subreddit
+//            )
+//
+//            withContext(Dispatchers.Main) {
+//                _subredditSuggestions.value = suggestions
+//            }
+        }
     }
 
 }

@@ -55,17 +55,17 @@ class UseCaseTests {
         }
     }
 
-    @Test
-    fun retrievingInOrder() {
-        val subreddits = listOf(
-            "humanporn",
-            "earthporn"
-        )
-
-        runBlocking {
-            saveSubredditByNames(subreddits)
-        }
-    }
+//    @Test
+//    fun retrievingInOrder() {
+//        val subreddits = listOf(
+//            "humanporn",
+//            "earthporn"
+//        )
+//
+//        runBlocking {
+//            saveSubredditByNames(subreddits)
+//        }
+//    }
 
     @Test
     fun subreddithWithNoImages() {

@@ -39,27 +39,29 @@ class RetrieveLatestImagesUseCase @Inject constructor(
                 { it.minUpvoteCount }
             )
 
+        @Suppress("UnnecessaryVariable")
         val images = posts
             .asSequence()
             // for easy indexing
             .map { it.copy(subreddit = it.subreddit.toLowerCase(Locale.ROOT)) }
-            .filterImages()
             .filter { it.id !in existingPostIds }
             .filter {
                 val minUpvoteCount = minUpvoteCounts[it.subreddit] ?: return@filter false
                 return@filter minUpvoteCount < it.score
             }
-            .map { convertToDirectImageLink(it) }
-            .filterNotNull()
+            .filterImages()
             .toList()
             .take(100)
 
-        return images
+        // use map so that it stops at the breakpoint
+        return images // .map { it }
     }
 
     private fun Sequence<RedditPost>.filterImages(): Sequence<RedditPost> {
         return this
             .filter { !it.stickied }
+            .map { convertToDirectImageLink(it) }
+            .filterNotNull()
         // this was needed for some reason, cannot be used for multiple subreddits so directly
         // .filter { it.subreddit.equals(subreddit, ignoreCase = true) }
     }

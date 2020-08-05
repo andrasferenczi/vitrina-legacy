@@ -172,7 +172,7 @@ class MainViewModel @Inject constructor(
 
     fun tryAddSubreddit(subreddit: String) {
         scope.launch {
-            setUserMessage("Adding subreddit $subreddit")
+            setUserMessage("Adding subreddit /r/$subreddit")
 
             withLoading {
                 val result = tryAddSubredditUseCase(

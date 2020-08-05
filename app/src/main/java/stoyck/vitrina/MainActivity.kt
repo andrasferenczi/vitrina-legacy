@@ -225,8 +225,8 @@ class MainActivity : AppCompatActivity() {
 
     fun showSnackbar(message: String) {
         Snackbar.make(contentMainContainer, message, Snackbar.LENGTH_LONG)
-            .setAction("CLOSE") { }
-            .setActionTextColor(resources.getColor(android.R.color.holo_red_light))
+            // .setAction("CLOSE") { }
+            // .setActionTextColor(resources.getColor(android.R.color.holo_red_light))
             .show()
     }
 }

@@ -12,6 +12,11 @@ data class RedditAbout(
     @SerializedName("display_name")
     @Expose
     val displayName: String = "",
+
+    @SerializedName("display_name_prefixed")
+    @Expose
+    val displayNamePrefixed: String = "",
+
     @Expose
     val title: String = "",
     @Expose

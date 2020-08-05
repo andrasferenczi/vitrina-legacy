@@ -1,6 +1,7 @@
 package stoyck.vitrina.domain.usecase
 
 import android.content.Context
+import retrofit2.HttpException
 import stoyck.vitrina.R
 import stoyck.vitrina.domain.UserReadableException
 import stoyck.vitrina.network.RedditService
@@ -23,13 +24,26 @@ class TryAddSubredditUseCase @Inject constructor(
         context.resources.getString(R.string.error_subreddit_does_not_exist)
 
     suspend operator fun invoke(requestedSubredditName: String): VResult<List<PersistedSubredditData>> {
-        val subreddit = redditService.retrieveSubreddit(requestedSubredditName)
+        val subreddit = try {
+            redditService.retrieveSubreddit(requestedSubredditName)
+        } catch (e: Exception) {
+            if (e is HttpException) {
+                if (e.code() == 404) {
+                    val message =
+                        String.format(subredditDoesNotExistMessage, "/r/$requestedSubredditName")
+                    return VResult.failure(UserReadableException(message))
+                }
+            }
+
+            // Something else, handle it above
+            throw e
+        }
 
         // is it the default
-        val subredditExists = subreddit == RedditAbout()
+        val subredditExists = subreddit != RedditAbout()
 
         if (!subredditExists) {
-            val message = String.format(subredditDoesNotExistMessage, subreddit)
+            val message = String.format(subredditDoesNotExistMessage, subreddit.displayName)
             return VResult.failure(UserReadableException(message))
         }
 

@@ -1,14 +1,17 @@
 package stoyck.vitrina.domain
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import kotlinx.coroutines.*
+import stoyck.vitrina.R
 import stoyck.vitrina.domain.preferences.PreferencesData
 import stoyck.vitrina.domain.usecase.GetSubredditHintsUseCase
 import stoyck.vitrina.domain.usecase.LoadSettingsUseCase
 import stoyck.vitrina.domain.usecase.SaveSettingsUseCase
 import stoyck.vitrina.domain.usecase.TryAddSubredditUseCase
+import stoyck.vitrina.persistence.data.PersistedSubredditData
 import stoyck.vitrina.ui.SubredditSuggestionData
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,6 +24,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class MainViewModel @Inject constructor(
+    private val context: Context,
     // Use case names added to the end, because
     private val getSubredditHintsUseCase: GetSubredditHintsUseCase,
     private val tryAddSubredditUseCase: TryAddSubredditUseCase,
@@ -55,12 +59,28 @@ class MainViewModel @Inject constructor(
 
     val menuState: LiveData<MenuState> = _menuState
 
+    private val _subreddits: MutableLiveData<List<PersistedSubredditData>> = MutableLiveData(
+        emptyList()
+    )
+
+    val subreddits: LiveData<List<PersistedSubredditData>> = _subreddits
+
     private val _subredditSuggestions: MutableLiveData<List<SubredditSuggestionData>> =
         MutableLiveData(
             ArrayList()
         )
 
     val subredditSuggestions: LiveData<List<SubredditSuggestionData>> = _subredditSuggestions
+
+    private val _userMessage: MutableLiveData<String?> = MutableLiveData(null)
+
+    val userMessage: LiveData<String?> = _userMessage
+
+    private suspend fun setUserMessage(message: String?) {
+        withContext(Dispatchers.Main) {
+            _userMessage.value = message
+        }
+    }
 
     private val _loadingCount = MutableLiveData(0)
 
@@ -82,6 +102,19 @@ class MainViewModel @Inject constructor(
                 _loadingCount.value = _loadingCount.value!! - 1
             }
         }
+    }
+
+    private suspend fun showMessageAndLog(exception: Throwable): Boolean {
+        if (exception is UserReadableException) {
+            setUserMessage(exception.userReadableMessage)
+        } else {
+            val noIdeaError = context.resources.getString(R.string.error_no_idea)
+            setUserMessage(noIdeaError)
+        }
+
+        // Todo: log error - at least the unknown ones
+
+        return true
     }
 
     init {
@@ -139,13 +172,27 @@ class MainViewModel @Inject constructor(
 
     fun tryAddSubreddit(subreddit: String) {
         scope.launch {
-//            val result = tryAddSubredditUseCase(
-//                requestedSubredditName = subreddit
-//            )
-//
-//            withContext(Dispatchers.Main) {
-//                _subredditSuggestions.value = suggestions
-//            }
+            setUserMessage("Adding subreddit $subreddit")
+
+            withLoading {
+                val result = tryAddSubredditUseCase(
+                    requestedSubredditName = subreddit
+                )
+
+                val exception = result.exceptionOrNull()
+
+                if (exception != null) {
+                    showMessageAndLog(exception)
+                    return@withLoading
+                }
+
+                val subreddits = result.getOrNull()
+                    ?: throw RuntimeException("Should not be null if success - failure handled earlier")
+
+                withContext(Dispatchers.Main) {
+                    _subreddits.value = subreddits
+                }
+            }
         }
     }
 

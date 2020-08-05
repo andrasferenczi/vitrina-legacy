@@ -54,7 +54,11 @@ class MainActivity : AppCompatActivity() {
             mainProgressBar.visibility = if (loading) View.VISIBLE else View.GONE
         }
 
-        showSnackbar("Test is this very is")
+        viewModel.userMessage.observe(this) { message ->
+            if (message != null) {
+                showSnackbar(message)
+            }
+        }
     }
 
     private fun toDefaultMenu() {
@@ -114,6 +118,7 @@ class MainActivity : AppCompatActivity() {
 
                 subredditInputText.setOnEditorActionListener { view, id, event ->
                     val text = view.text.toString()
+                    toDefaultMenu()
                     viewModel.tryAddSubreddit(text)
                     true
                 }

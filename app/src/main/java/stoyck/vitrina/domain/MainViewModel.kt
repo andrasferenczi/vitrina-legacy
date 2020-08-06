@@ -13,6 +13,7 @@ import stoyck.vitrina.domain.usecase.SaveSettingsUseCase
 import stoyck.vitrina.domain.usecase.TryAddSubredditUseCase
 import stoyck.vitrina.persistence.data.PersistedSubredditData
 import stoyck.vitrina.ui.SubredditSuggestionData
+import java.net.UnknownHostException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,7 +35,15 @@ class MainViewModel @Inject constructor(
 
     private val job = Dispatchers.IO + SupervisorJob()
 
-    private val scope = CoroutineScope(job)
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        // No special error handling for this one,
+        // as it is just about setting the message
+        GlobalScope.launch {
+            showMessageAndLog(throwable)
+        }
+    }
+
+    private val scope = CoroutineScope(job + exceptionHandler)
 
     enum class MenuState {
         /**
@@ -105,11 +114,18 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun showMessageAndLog(exception: Throwable): Boolean {
-        if (exception is UserReadableException) {
-            setUserMessage(exception.userReadableMessage)
-        } else {
-            val noIdeaError = context.resources.getString(R.string.error_no_idea)
-            setUserMessage(noIdeaError)
+        when (exception) {
+            is UserReadableException -> {
+                setUserMessage(exception.userReadableMessage)
+            }
+            is UnknownHostException -> {
+                val noInternet = context.getString(R.string.error_no_internet)
+                setUserMessage(noInternet)
+            }
+            else -> {
+                val noIdeaError = context.getString(R.string.error_no_idea)
+                setUserMessage(noIdeaError)
+            }
         }
 
         // Todo: log error - at least the unknown ones

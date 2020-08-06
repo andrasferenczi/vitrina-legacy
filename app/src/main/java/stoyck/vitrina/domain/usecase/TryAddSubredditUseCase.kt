@@ -30,7 +30,7 @@ class TryAddSubredditUseCase @Inject constructor(
             if (e is HttpException) {
                 if (e.code() == 404) {
                     val message =
-                        String.format(subredditDoesNotExistMessage, "/r/$requestedSubredditName")
+                        subredditDoesNotExistMessage.format("/r/$requestedSubredditName")
                     return VResult.failure(UserReadableException(message))
                 }
             }

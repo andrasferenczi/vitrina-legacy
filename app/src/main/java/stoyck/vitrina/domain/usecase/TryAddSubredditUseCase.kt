@@ -23,7 +23,8 @@ class TryAddSubredditUseCase @Inject constructor(
     private val subredditDoesNotExistMessage =
         context.resources.getString(R.string.error_subreddit_does_not_exist)
 
-    suspend operator fun invoke(requestedSubredditName: String): VResult<List<PersistedSubredditData>> {
+    suspend operator fun invoke(requestedSubredditName: String):
+            VResult<Pair<PersistedSubredditData, List<PersistedSubredditData>>> {
         val subreddit = try {
             redditService.retrieveSubreddit(requestedSubredditName)
         } catch (e: Exception) {
@@ -58,7 +59,7 @@ class TryAddSubredditUseCase @Inject constructor(
 
         saveSubreddits(newSubreddits)
 
-        return VResult.success(newSubreddits)
+        return VResult.success(newSubreddit to newSubreddits)
     }
 
 }

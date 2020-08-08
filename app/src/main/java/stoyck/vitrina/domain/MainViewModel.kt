@@ -207,8 +207,8 @@ class MainViewModel @Inject constructor(
 
     fun tryAddSubreddit(subreddit: String) {
         scope.launch {
-            val message = context.getString(R.string.message_subreddit_being_added)
-            setUserMessage(message.format("/r/$subreddit"))
+            val progressMessage = context.getString(R.string.message_subreddit_being_added)
+            setUserMessage(progressMessage.format("/r/$subreddit"))
 
             withLoading {
                 val result = tryAddSubredditUseCase(
@@ -222,11 +222,15 @@ class MainViewModel @Inject constructor(
                     return@withLoading
                 }
 
-                val subreddits = result.getOrNull()
+                val (addedSubreddit, subreddits) = result.getOrNull()
                     ?: throw RuntimeException("Should not be null if success - failure handled earlier")
 
                 withContext(Dispatchers.Main) {
                     _subreddits.value = subreddits
+
+                    val successMessage =
+                        context.getString(R.string.message_subreddit_successfully_added)
+                    setUserMessage(successMessage.format("/r/${addedSubreddit.name}"))
                 }
             }
         }

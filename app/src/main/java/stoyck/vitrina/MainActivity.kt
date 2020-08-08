@@ -12,7 +12,9 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.content_subreddit_list.*
 import kotlinx.android.synthetic.main.content_subreddit_suggestion.*
+import kotlinx.android.synthetic.main.content_subreddit_suggestion.contentSubredditSuggestionContainer
 import stoyck.vitrina.domain.MainViewModel
 import stoyck.vitrina.util.DebouncedTextWatcher
 import stoyck.vitrina.util.hideKeyboard
@@ -50,6 +52,10 @@ class MainActivity : AppCompatActivity() {
 
         setupSettings()
 
+        subredditsRecyclerView.onSave = { subreddits ->
+            viewModel.saveSubreddits(subreddits)
+        }
+
         viewModel.isLoading.observe(this) { loading ->
             mainProgressBar.visibility = if (loading) View.VISIBLE else View.GONE
         }
@@ -58,6 +64,19 @@ class MainActivity : AppCompatActivity() {
             if (message != null) {
                 showSnackbar(message)
             }
+        }
+
+        viewModel.subreddits.observe(this) { subreddits ->
+            if (subreddits.isEmpty()) {
+                noSubredditsMessage.visibility = View.VISIBLE
+                contentSubredditsContainer.visibility = View.GONE
+                return@observe
+            }
+
+            noSubredditsMessage.visibility = View.GONE
+            contentSubredditsContainer.visibility = View.VISIBLE
+
+            subredditsRecyclerView.setData(subreddits)
         }
     }
 

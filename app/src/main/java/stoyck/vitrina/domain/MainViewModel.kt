@@ -7,10 +7,7 @@ import androidx.lifecycle.map
 import kotlinx.coroutines.*
 import stoyck.vitrina.R
 import stoyck.vitrina.domain.preferences.PreferencesData
-import stoyck.vitrina.domain.usecase.GetSubredditHintsUseCase
-import stoyck.vitrina.domain.usecase.LoadSettingsUseCase
-import stoyck.vitrina.domain.usecase.SaveSettingsUseCase
-import stoyck.vitrina.domain.usecase.TryAddSubredditUseCase
+import stoyck.vitrina.domain.usecase.*
 import stoyck.vitrina.persistence.data.PersistedSubredditData
 import stoyck.vitrina.ui.suggestion.SubredditSuggestionData
 import java.net.UnknownHostException
@@ -30,7 +27,9 @@ class MainViewModel @Inject constructor(
     private val getSubredditHintsUseCase: GetSubredditHintsUseCase,
     private val tryAddSubredditUseCase: TryAddSubredditUseCase,
     private val loadSettingsUseCase: LoadSettingsUseCase,
-    private val saveSettingsUseCase: SaveSettingsUseCase
+    private val saveSettingsUseCase: SaveSettingsUseCase,
+    private val loadSubredditsUseCase: LoadSubredditsUseCase,
+    private val saveSubredditsUseCase: SaveSubredditsUseCase
 ) {
 
     private val job = Dispatchers.IO + SupervisorJob()
@@ -135,6 +134,7 @@ class MainViewModel @Inject constructor(
 
     init {
         loadSettings()
+        loadSubreddits()
     }
 
     //
@@ -153,6 +153,26 @@ class MainViewModel @Inject constructor(
 
             withContext(Dispatchers.Main) {
                 _preferencesState.value = data
+            }
+        }
+    }
+
+    private fun loadSubreddits() {
+        scope.launch {
+            val data = loadSubredditsUseCase()
+
+            withContext(Dispatchers.Main) {
+                this@MainViewModel._subreddits.value = data
+            }
+        }
+    }
+
+    fun saveSubreddits(subreddits: List<PersistedSubredditData>) {
+        scope.launch {
+            saveSubredditsUseCase(subreddits)
+
+            withContext(Dispatchers.Main) {
+                this@MainViewModel._subreddits.value = subreddits
             }
         }
     }

@@ -9,13 +9,19 @@
     tools:showIn="@layout/app_bar_main">
 
     <TextView
-        android:id="@+id/message"
+        android:id="@+id/noSubredditsMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="@string/no_subreddits_data"
+        android:textSize="@dimen/typography__subtitle"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        layout="@layout/content_subreddit_list"
+        android:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,4 +6,6 @@ interface OnSubredditClickedListener {
 
     fun onSubredditClicked(content: PersistedSubredditData, position: Int)
 
+    fun onSubredditChanged(content: PersistedSubredditData, position: Int)
+
 }

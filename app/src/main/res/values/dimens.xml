@@ -15,5 +15,7 @@
     <dimen name="spacing__1">2dp</dimen>
     <dimen name="spacing__2">4dp</dimen>
     <dimen name="spacing__3">8dp</dimen>
+    <dimen name="spacing__4">12dp</dimen>
+    <dimen name="spacing__5">18dp</dimen>
 
 </resources>

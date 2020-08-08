@@ -88,4 +88,15 @@ class SubredditsRecyclerView @JvmOverloads constructor(
             onSubredditClickedListener?.onSubredditClicked(content, position)
         }
     }
+
+    override fun onSubredditChanged(content: PersistedSubredditData, position: Int) {
+        this.subredditAdapter.data[position] = content
+        // No notification, because the edittext contains the data
+        // subredditAdapter.notifyItemChanged(position)
+
+        this.onSaveDebouncer {
+            val data = subredditAdapter.data.toList()
+            onSave?.invoke(data)
+        }
+    }
 }

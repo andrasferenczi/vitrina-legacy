@@ -58,8 +58,18 @@ class SubredditsRecyclerView @JvmOverloads constructor(
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
         subredditAdapter.onItemMove(fromPosition, toPosition)
 
+        this.saveCurrentState()
+    }
+
+    override fun onItemDismiss(position: Int) {
+        subredditAdapter.onItemDismiss(position)
+
+        this.saveCurrentState()
+    }
+
+    private fun saveCurrentState() {
         this.onSaveDebouncer {
-            val data =subredditAdapter.data.toList()
+            val data = subredditAdapter.data.toList()
             onSave?.invoke(data)
         }
     }

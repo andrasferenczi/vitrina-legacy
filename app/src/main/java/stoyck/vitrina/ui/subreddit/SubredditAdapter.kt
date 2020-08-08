@@ -14,26 +14,7 @@ class SubredditAdapter(
     private val onSubredditClickedListener: OnSubredditClickedListener
 ) : RecyclerView.Adapter<SubredditViewHolder>(), TouchHelperAdapter {
 
-    val data: MutableList<PersistedSubredditData> = ArrayList(
-        listOf(
-            PersistedSubredditData(
-                id = "w",
-                name = "xxtest",
-                minUpvoteCount = 2220
-            ),
-            PersistedSubredditData(
-                id = "w",
-                name = "xxteswdt",
-                minUpvoteCount = 2520
-            ),
-            PersistedSubredditData(
-                id = "w",
-                name = "xxteswdt",
-                minUpvoteCount = 2520
-            )
-        )
-
-    )
+    val data: MutableList<PersistedSubredditData> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubredditViewHolder {
         val view = LayoutInflater
@@ -61,5 +42,11 @@ class SubredditAdapter(
         }
 
         notifyItemMoved(fromPosition, toPosition)
+    }
+
+    override fun onItemDismiss(position: Int) {
+        data.removeAt(position)
+
+        notifyItemRemoved(position)
     }
 }

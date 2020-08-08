@@ -4,6 +4,6 @@ interface TouchHelperAdapter {
 
     fun onItemMove(fromPosition: Int, toPosition: Int)
 
-    // onItemDismiss
+     fun onItemDismiss(position: Int)
 
 }

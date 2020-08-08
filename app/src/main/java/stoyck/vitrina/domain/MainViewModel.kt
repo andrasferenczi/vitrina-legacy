@@ -80,13 +80,12 @@ class MainViewModel @Inject constructor(
 
     val subredditSuggestions: LiveData<List<SubredditSuggestionData>> = _subredditSuggestions
 
-    private val _userMessage: MutableLiveData<String?> = MutableLiveData(null)
-
-    val userMessage: LiveData<String?> = _userMessage
+    // Can be set from anywhere
+    val userMessage: MutableLiveData<String?> = MutableLiveData(null)
 
     private suspend fun setUserMessage(message: String?) {
         withContext(Dispatchers.Main) {
-            _userMessage.value = message
+            userMessage.value = message
         }
     }
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import stoyck.vitrina.R
 import stoyck.vitrina.persistence.data.PersistedSubredditData
 import stoyck.vitrina.ui.recyclerview.CustomItemTouchHelper
 import stoyck.vitrina.ui.recyclerview.TouchCallback
@@ -20,11 +21,16 @@ class SubredditsRecyclerView @JvmOverloads constructor(
 
     private val subredditAdapter: SubredditAdapter
 
-    var onSubredditClickedListener: OnSubredditClickedListener? = null
+    private var onSubredditClickedListener: OnSubredditClickedListener? = null
     var onSave: ((subreddits: List<PersistedSubredditData>) -> Unit)? = null
+
+    // Sending a message to the user
+    var onMessage: ((message: String) -> Unit)? = null
 
     private val onClickDebouncer = Debouncer()
     private val onSaveDebouncer = Debouncer()
+
+    private val removedMessage = context.getString(R.string.message_subreddit_removed)
 
     init {
         val callback = TouchCallback(this)
@@ -58,19 +64,22 @@ class SubredditsRecyclerView @JvmOverloads constructor(
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
         subredditAdapter.onItemMove(fromPosition, toPosition)
 
-        this.saveCurrentState()
-    }
-
-    override fun onItemDismiss(position: Int) {
-        subredditAdapter.onItemDismiss(position)
-
-        this.saveCurrentState()
-    }
-
-    private fun saveCurrentState() {
         this.onSaveDebouncer {
             val data = subredditAdapter.data.toList()
             onSave?.invoke(data)
+        }
+    }
+
+    override fun onItemDismiss(position: Int) {
+        val itemToBeRemoved = subredditAdapter.data[position]
+        val message = this.removedMessage.format("/r/${itemToBeRemoved.name}")
+
+        subredditAdapter.onItemDismiss(position)
+
+        this.onSaveDebouncer {
+            val data = subredditAdapter.data.toList()
+            onSave?.invoke(data)
+            onMessage?.invoke(message)
         }
     }
 

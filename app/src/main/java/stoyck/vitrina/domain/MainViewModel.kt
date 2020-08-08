@@ -12,7 +12,7 @@ import stoyck.vitrina.domain.usecase.LoadSettingsUseCase
 import stoyck.vitrina.domain.usecase.SaveSettingsUseCase
 import stoyck.vitrina.domain.usecase.TryAddSubredditUseCase
 import stoyck.vitrina.persistence.data.PersistedSubredditData
-import stoyck.vitrina.ui.SubredditSuggestionData
+import stoyck.vitrina.ui.suggestion.SubredditSuggestionData
 import java.net.UnknownHostException
 import javax.inject.Inject
 import javax.inject.Singleton

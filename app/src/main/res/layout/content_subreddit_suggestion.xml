@@ -8,7 +8,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/app_bar_main">
 
-    <stoyck.vitrina.ui.SubredditSuggestionRecyclerView
+    <stoyck.vitrina.ui.suggestion.SubredditSuggestionRecyclerView
         android:id="@+id/subredditSuggestionRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

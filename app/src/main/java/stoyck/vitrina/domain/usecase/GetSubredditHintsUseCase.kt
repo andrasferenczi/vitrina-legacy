@@ -1,7 +1,7 @@
 package stoyck.vitrina.domain.usecase
 
 import stoyck.vitrina.network.RedditService
-import stoyck.vitrina.ui.SubredditSuggestionData
+import stoyck.vitrina.ui.suggestion.SubredditSuggestionData
 import javax.inject.Inject
 import javax.inject.Singleton
 

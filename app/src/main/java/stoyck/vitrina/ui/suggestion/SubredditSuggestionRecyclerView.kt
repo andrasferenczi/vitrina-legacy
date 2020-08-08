@@ -1,4 +1,4 @@
-package stoyck.vitrina.ui
+package stoyck.vitrina.ui.suggestion
 
 import android.content.Context
 import android.util.AttributeSet
@@ -18,7 +18,8 @@ class SubredditSuggestionRecyclerView
         this.onSubredditSuggestionClicked?.invoke(it)
     }
 
-    private val suggestionsAdapter = SubredditSuggestionsAdapter(this.onClick)
+    private val suggestionsAdapter =
+        SubredditSuggestionsAdapter(this.onClick)
 
     init {
         layoutManager = LinearLayoutManager(context)

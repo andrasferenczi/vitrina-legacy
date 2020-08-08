@@ -5,7 +5,7 @@ import androidx.annotation.VisibleForTesting
 import stoyck.vitrina.network.data.RedditAbout
 import stoyck.vitrina.network.data.RedditAuthorizationResponse
 import stoyck.vitrina.network.data.RedditPost
-import stoyck.vitrina.ui.SubredditSuggestionData
+import stoyck.vitrina.ui.suggestion.SubredditSuggestionData
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton

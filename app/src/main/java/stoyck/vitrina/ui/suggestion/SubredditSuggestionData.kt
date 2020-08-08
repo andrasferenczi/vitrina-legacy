@@ -1,4 +1,4 @@
-package stoyck.vitrina.ui
+package stoyck.vitrina.ui.suggestion
 
 data class SubredditSuggestionData(
     // Icon?

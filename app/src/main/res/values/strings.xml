@@ -11,8 +11,6 @@
     <string name="action_search">Search</string>
     <string name="action_settings">Settings</string>
 
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
 
     <string name="members">%1$s members</string>
@@ -27,4 +25,7 @@
     <string name="message_subreddit_removed">Removed subreddit %1$s</string>
 
     <string name="subreddit_min_upvote_count_text">minimum upvotes</string>
+
+    <string name="go_to_store_page">Rate</string>
+    <string name="go_to_source_code">Github</string>
 </resources>

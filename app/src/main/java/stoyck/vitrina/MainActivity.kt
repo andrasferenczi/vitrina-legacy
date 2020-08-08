@@ -1,8 +1,13 @@
 package stoyck.vitrina
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
+import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.Switch
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -118,6 +123,32 @@ class MainActivity : AppCompatActivity() {
         }
         viewModel.preferencesState.observe(this) {
             shuffleSwitch.isChecked = it.shuffle
+        }
+
+        val header = navigationView
+            .getHeaderView(0) as LinearLayout
+
+        val leaveRatingButton = header.findViewById(R.id.goToStoreButton) as Button
+
+        leaveRatingButton.setOnClickListener {
+            val appPackageName =
+                packageName // getPackageName() from Context or Activity object
+
+            try {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=$appPackageName")
+                    )
+                )
+            } catch (anfe: ActivityNotFoundException) {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
+                    )
+                )
+            }
         }
     }
 

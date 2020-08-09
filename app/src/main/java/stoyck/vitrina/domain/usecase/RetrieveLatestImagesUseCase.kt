@@ -51,7 +51,9 @@ class RetrieveLatestImagesUseCase @Inject constructor(
             }
             .filterImages()
             .toList()
-            .take(100)
+            // Do not load too many images,
+            // Might be too much load in network for a single time
+            .take(15)
 
         // use map so that it stops at the breakpoint
         return images // .map { it }

@@ -12,9 +12,7 @@
 
     <!--To read muzei sources ?-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name='.ProdVitrinaApplication'
@@ -24,16 +22,72 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- Settings/Configuration -->
         <activity
             android:name=".MainActivity"
-            android:label="VitrinaActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/activity_settings_label"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Muzei -->
+        <activity-alias
+            android:name=".VitrinaLauncherActivity"
+            android:enabled="@bool/enable_launcher"
+            android:targetActivity=".muzei.VitrinaRedirectActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity
+            android:label="@string/app_name"
+            android:name=".muzei.VitrinaRedirectActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <service
+            android:name=".muzei.VitrinaArtSource"
+            android:exported="false"
+            android:description="@string/muzei_vitrina_description">
+            <intent-filter>
+                <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />
+            </intent-filter>
+
+            <meta-data
+                android:name="color"
+                android:value="@color/colorAccent" />
+
+            <meta-data
+                android:name="settingsActivity"
+                android:value="stoyck.vitrina.MainActivity" />
+
+            <meta-data
+                android:name="replacement"
+                android:value="${vitrinaAuthority}" />
+        </service>
+        <provider
+            android:name=".muzei.VitrinaArtProvider"
+            android:authorities="${vitrinaAuthority}"
+            android:label="@string/muzei_vitrina_name"
+            android:description="@string/muzei_vitrina_description"
+            android:exported="true"
+            android:permission="com.google.android.apps.muzei.api.ACCESS_PROVIDER">
+            <intent-filter>
+                <action android:name="com.google.android.apps.muzei.api.MuzeiArtProvider" />
+            </intent-filter>
+
+            <meta-data
+                android:name="settingsActivity"
+                android:value="stoyck.vitrina.MainActivity" />
+        </provider>
+
     </application>
 
 </manifest>

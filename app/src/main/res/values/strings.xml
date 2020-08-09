@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">vitrina</string>
+    <string name="app_name">Vitrina</string>
+
+    <string name="activity_settings_label">Vitrina Settings</string>
+
     <string name="reddit_client_id">Cz3RfZHd1xgl2g</string>
 
     <string name="main_screen_title">Subreddits</string>
@@ -28,4 +31,14 @@
 
     <string name="go_to_store_page">Rate</string>
     <string name="go_to_source_code">Github</string>
+
+    <!-- Muzei -->
+    <!-- Redirect activity related -->
+    <string name="message_enable_vitrina">Select Vitrina in Muzei</string>
+    <string name="message_enable_vitrina_source">Select Vitrina from the list of Source in Muzei</string>
+    <string name="message_muzei_missing_error">You must install Muzei from the Google Play Store</string>
+    <string name="message_play_store_missing_error">Could not install Muzei from the Google Play Store</string>
+    <!-- Visible texts -->
+    <string name="muzei_vitrina_name">Vitrina</string>
+    <string name="muzei_vitrina_description">Images from Reddit</string>
 </resources>

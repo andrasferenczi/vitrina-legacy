@@ -9,6 +9,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import stoyck.vitrina.di.TestVitrinaApplication
 import stoyck.vitrina.network.RedditService
+import stoyck.vitrina.persistence.data.PersistedSubredditData
 import javax.inject.Inject
 
 @RunWith(AndroidJUnit4::class)
@@ -86,4 +87,22 @@ class NetworkCallTests {
             Assert.assertTrue("Subreddit $it", it.name.startsWith(query, ignoreCase = true))
         }
     }
+
+//    @Test
+//    fun initialDataCreation() {
+//        val data = listOf(
+//            "earthporn",
+//            "cityporn",
+//            "spaceporn"
+//        )
+//
+//        runBlocking {
+//            val values = data.map {
+//                redditService.retrieveSubreddit(it)
+//            }
+//            val persisted = values.map { PersistedSubredditData.fromAbout(it) }
+//
+//            println(values)
+//        }
+//    }
 }

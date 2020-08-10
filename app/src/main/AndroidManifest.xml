@@ -87,6 +87,8 @@
                 android:value="stoyck.vitrina.MainActivity" />
         </provider>
 
+        <receiver android:name=".muzei.VitrinaCommandReceiver">
+        </receiver>
     </application>
 
 </manifest>

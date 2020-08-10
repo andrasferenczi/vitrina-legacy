@@ -1,8 +1,12 @@
 package stoyck.vitrina.muzei
 
 import android.util.Log
+import androidx.core.app.RemoteActionCompat
+import androidx.core.graphics.drawable.IconCompat
+import com.google.android.apps.muzei.api.provider.Artwork
 import com.google.android.apps.muzei.api.provider.MuzeiArtProvider
 import stoyck.vitrina.BuildConfig
+import stoyck.vitrina.R
 
 class VitrinaArtProvider : MuzeiArtProvider() {
 
@@ -18,49 +22,26 @@ class VitrinaArtProvider : MuzeiArtProvider() {
 
         // This is the important part
         VitrinaArtWorker.enqueueLoad(context)
-
-//        if (initial) {
-//            addArtwork(
-//                Artwork.Builder()
-//                    .token("initial")
-//                    .title("Vitrina Starry")
-//                    .byline("Vitrina Gogh, 20202.\nMuzei shows a new painting every day.")
-//                    .attribution("wikiart.org")
-//                    .persistentUri(Uri.parse("file:///android_asset/starrynight.jpg"))
-//                    .webUri(Uri.parse("http://www.wikiart.org/en/vincent-van-gogh/the-starry-night-1889"))
-//                    .build()
-//            )
-//        } else {
-//            // Delete all but the latest artwork to avoid
-//            // cycling through all of the previously Featured Art
-//            query(contentUri, null, null, null, null)
-//                .use { cursor ->
-//                    if (BuildConfig.DEBUG) {
-//                        Log.d(TAG, "Found ${cursor.count} existing artwork")
-//                    }
-//
-//                    // Has to have at least 2
-//                    if (cursor.count <= 1) {
-//                        return@use
-//                    }
-//
-//                    val moved = cursor.moveToFirst()
-//                    if (!moved) {
-//                        return@use
-//                    }
-//
-//                    val baseColumnIndex = cursor.getColumnIndex(BaseColumns._ID)
-//                    val baseValue = cursor.getString(baseColumnIndex)
-//
-//                    val count = delete(
-//                        contentUri, BaseColumns._ID + " != ?",
-//                        arrayOf(baseValue)
-//                    )
-//
-//                    if (BuildConfig.DEBUG) {
-//                        Log.d(TAG, "Deleted $count")
-//                    }
-//                }
-//        }
     }
+
+    override fun getCommandActions(artwork: Artwork): List<RemoteActionCompat> {
+        val context = context ?: return emptyList()
+
+        val existingCommands = super.getCommandActions(artwork)
+
+        return listOf(
+            *existingCommands.toTypedArray(),
+            RemoteActionCompat(
+                IconCompat.createWithResource(context, R.drawable.ic_save),
+                context.getString(R.string.action_save_title),
+                context.getString(R.string.action_save_description),
+                VitrinaCommandReceiver.createPendingIntent(
+                    context,
+                    artwork,
+                    VitrinaCommandReceiver.Companion.VitrinaCommand.Save
+                )
+            )
+        )
+    }
+
 }

@@ -1,7 +1,6 @@
 package stoyck.vitrina.muzei.commands
 
 import android.content.Context
-import android.widget.Toast
 import androidx.work.*
 import com.google.gson.Gson
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -9,6 +8,7 @@ import kotlinx.coroutines.withContext
 import stoyck.vitrina.R
 import stoyck.vitrina.VitrinaApplication
 import stoyck.vitrina.domain.usecase.SaveArtworkOnDiskUseCase
+import stoyck.vitrina.util.showToast
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
@@ -20,8 +20,6 @@ class ArtworkSaveWorker(
     companion object {
         private const val KEY_PARAMS = "KEY_PARAMS"
 
-        private val gson = Gson()
-
         private val SINGLE_THREAD_CONTEXT by lazy {
             Executors.newSingleThreadExecutor { target -> Thread(target, "VitrinaArt") }
                 .asCoroutineDispatcher()
@@ -29,6 +27,7 @@ class ArtworkSaveWorker(
 
         internal fun enqueueLoad(
             context: Context,
+            gson: Gson,
             params: SaveArtworkOnDiskUseCase.Params
         ) {
             val workManager = WorkManager.getInstance(context)
@@ -47,6 +46,9 @@ class ArtworkSaveWorker(
     @Inject
     lateinit var saveArtworkOnDiskUseCase: SaveArtworkOnDiskUseCase
 
+    @Inject
+    lateinit var gson: Gson
+
     init {
         (context.applicationContext as VitrinaApplication)
             .appComponent
@@ -54,11 +56,10 @@ class ArtworkSaveWorker(
     }
 
     override suspend fun doWork(): Result = withContext(SINGLE_THREAD_CONTEXT) {
-        Toast.makeText(
+        showToast(
             applicationContext,
-            R.string.action_save_worker_start,
-            Toast.LENGTH_LONG
-        ).show()
+            R.string.action_save_worker_start
+        )
 
         val paramsRaw = inputData.getString(KEY_PARAMS)
 

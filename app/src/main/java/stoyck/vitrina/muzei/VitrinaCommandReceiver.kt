@@ -7,12 +7,15 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import com.google.android.apps.muzei.api.provider.Artwork
+import com.google.gson.Gson
 import stoyck.vitrina.BuildConfig
 import stoyck.vitrina.R
+import stoyck.vitrina.VitrinaApplication
 import stoyck.vitrina.domain.usecase.SaveArtworkOnDiskUseCase
 import stoyck.vitrina.muzei.commands.ArtworkSaveWorker
 import stoyck.vitrina.muzei.commands.VitrinaProtocolConstants
 import java.io.File
+import javax.inject.Inject
 
 /**
  * Receiving the Intent triggered from the RemoteActionCompat.
@@ -25,6 +28,9 @@ import java.io.File
  */
 class VitrinaCommandReceiver : BroadcastReceiver() {
 
+    @Inject
+    lateinit var gson: Gson
+
     override fun onReceive(context: Context?, intent: Intent?) {
         fun quit(): Nothing {
             throw RuntimeException("Invalid onreceive ${intent.toString()}")
@@ -33,6 +39,10 @@ class VitrinaCommandReceiver : BroadcastReceiver() {
         if (context == null || intent == null) {
             quit()
         }
+
+        (context.applicationContext as VitrinaApplication)
+            .appComponent
+            .inject(this)
 
         val action = intent.action ?: quit()
 
@@ -70,6 +80,7 @@ class VitrinaCommandReceiver : BroadcastReceiver() {
 
                 ArtworkSaveWorker.enqueueLoad(
                     context,
+                    gson,
                     SaveArtworkOnDiskUseCase.Params(
                         existingFile = data,
                         uri = uri,

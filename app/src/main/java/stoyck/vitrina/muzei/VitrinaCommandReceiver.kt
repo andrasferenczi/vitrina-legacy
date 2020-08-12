@@ -65,7 +65,7 @@ class VitrinaCommandReceiver : BroadcastReceiver() {
         }
 
         if (BuildConfig.DEBUG) {
-            Toast.makeText(context, "Received action $action", Toast.LENGTH_LONG)
+            Toast.makeText(context, "Debug: Received action $action", Toast.LENGTH_SHORT)
                 .show()
         }
 
@@ -74,7 +74,7 @@ class VitrinaCommandReceiver : BroadcastReceiver() {
                 Toast.makeText(
                     context,
                     context.getString(R.string.action_save_command_received),
-                    Toast.LENGTH_LONG
+                    Toast.LENGTH_SHORT
                 )
                     .show()
 

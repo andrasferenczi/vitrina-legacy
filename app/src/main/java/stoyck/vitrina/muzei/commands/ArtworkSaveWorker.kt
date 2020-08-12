@@ -1,6 +1,7 @@
 package stoyck.vitrina.muzei.commands
 
 import android.content.Context
+import android.widget.Toast
 import androidx.work.*
 import com.google.gson.Gson
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -58,7 +59,8 @@ class ArtworkSaveWorker(
     override suspend fun doWork(): Result = withContext(SINGLE_THREAD_CONTEXT) {
         showToast(
             applicationContext,
-            R.string.action_save_worker_start
+            R.string.action_save_worker_start,
+            duration = Toast.LENGTH_SHORT
         )
 
         val paramsRaw = inputData.getString(KEY_PARAMS)
@@ -71,7 +73,7 @@ class ArtworkSaveWorker(
         val params =
             gson.fromJson(paramsRaw, SaveArtworkOnDiskUseCase.Params::class.java)
 
-        saveArtworkOnDiskUseCase(params)
+        val result = saveArtworkOnDiskUseCase(params)
 
         Result.success()
     }

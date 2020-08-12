@@ -24,12 +24,12 @@ suspend fun showToast(context: Context, text: String) {
 }
 
 
-suspend fun showToast(context: Context, stringRes: Int) {
+suspend fun showToast(context: Context, stringRes: Int, duration: Int = Toast.LENGTH_LONG) {
     uiThread {
         Toast.makeText(
             context,
             stringRes,
-            Toast.LENGTH_LONG
+            duration
         ).show()
     }
 }

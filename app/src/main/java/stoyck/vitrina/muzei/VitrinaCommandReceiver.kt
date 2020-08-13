@@ -71,12 +71,14 @@ class VitrinaCommandReceiver : BroadcastReceiver() {
 
         when (action) {
             VitrinaProtocolConstants.COMMAND_SAVE_KEY -> {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.action_save_command_received),
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                if (BuildConfig.DEBUG) {
+                    Toast.makeText(
+                        context,
+                        "Debug: " + context.getString(R.string.action_save_command_received),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
 
                 ArtworkSaveWorker.enqueueLoad(
                     context,

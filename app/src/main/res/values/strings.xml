@@ -40,6 +40,7 @@
 
     <string name="message_enable_storage_permission">You need to enable storage permission for Vitrina to save images</string>
     <string name="message_file_already_exists_at">File already exists at %1$s</string>
+    <string name="message_image_saved_successfully">Image saved successfully</string>
 
     <!-- Muzei -->
     <!-- Redirect activity related -->

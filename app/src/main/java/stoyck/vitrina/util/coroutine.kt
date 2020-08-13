@@ -13,12 +13,12 @@ suspend fun uiThread(action: suspend () -> Unit) {
 }
 
 
-suspend fun showToast(context: Context, text: String) {
+suspend fun showToast(context: Context, text: String, duration: Int = Toast.LENGTH_LONG) {
     uiThread {
         Toast.makeText(
             context,
             text,
-            Toast.LENGTH_LONG
+            duration
         ).show()
     }
 }

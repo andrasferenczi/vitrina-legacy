@@ -6,6 +6,7 @@ import androidx.work.*
 import com.google.gson.Gson
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
+import stoyck.vitrina.BuildConfig
 import stoyck.vitrina.R
 import stoyck.vitrina.VitrinaApplication
 import stoyck.vitrina.domain.usecase.SaveArtworkOnDiskUseCase
@@ -57,11 +58,13 @@ class ArtworkSaveWorker(
     }
 
     override suspend fun doWork(): Result = withContext(SINGLE_THREAD_CONTEXT) {
-        showToast(
-            applicationContext,
-            R.string.action_save_worker_start,
-            duration = Toast.LENGTH_SHORT
-        )
+        if (BuildConfig.DEBUG) {
+            showToast(
+                applicationContext,
+                "Debug: " + applicationContext.getString(R.string.action_save_worker_start),
+                duration = Toast.LENGTH_SHORT
+            )
+        }
 
         val paramsRaw = inputData.getString(KEY_PARAMS)
 

@@ -85,7 +85,7 @@ class RetrieveLatestImagesUseCase @Inject constructor(
                 else
                     null
             }
-            PostHint.Other -> null
+            null, PostHint.Other -> null
         }
     }
 

@@ -2,6 +2,7 @@ package stoyck.vitrina.ui.subreddit
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -18,6 +19,7 @@ class SubredditViewHolder(
     private val onSubredditClickedListener: OnSubredditClickedListener
 ) : RecyclerView.ViewHolder(itemView) {
 
+    private var textChangedListener: TextWatcher? = null
 
     @SuppressLint("ClickableViewAccessibility")
     fun bind(content: PersistedSubredditData) {
@@ -45,12 +47,22 @@ class SubredditViewHolder(
 
             subredditNameTextView.text = content.name
 
+            // First remove the listener
+            // if it still has the name,
+            // the subreddits will be save by their old name
+            textChangedListener?.let { previousListener ->
+                subredditUpvoteCountEditText.removeTextChangedListener(previousListener)
+            }
+
             subredditUpvoteCountEditText.setText(content.minUpvoteCount.toString())
-            subredditUpvoteCountEditText.addTextChangedListener(
-                DebouncedTextWatcher(delayMillis = 300) {
-                    updateData()
-                }
-            )
+
+            DebouncedTextWatcher(delayMillis = 300) {
+                updateData()
+            }.also {
+                subredditUpvoteCountEditText.addTextChangedListener(it)
+                textChangedListener = it
+            }
+
             subredditUpvoteCountEditText.setOnEditorActionListener { view, actionId, _ ->
                 return@setOnEditorActionListener when (actionId) {
                     EditorInfo.IME_ACTION_DONE -> {

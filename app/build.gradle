@@ -26,8 +26,9 @@ android {
         applicationId "stoyck.vitrina"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+
+        versionCode 28
+        versionName "1.0.28"
 
         testInstrumentationRunner "stoyck.vitrina.VitrinaTestRunner"
 

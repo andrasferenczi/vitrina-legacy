@@ -100,3 +100,8 @@ lint/tmp/
 # lint/reports/
 
 /.idea/httpRequests/
+
+# Let the hackers work a couple more seconds to get it
+# Devs can get it like that:
+# https://support.google.com/firebase/answer/7015592
+/app/google-services.json

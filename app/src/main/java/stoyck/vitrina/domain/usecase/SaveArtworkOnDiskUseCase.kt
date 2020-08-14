@@ -10,10 +10,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.core.content.FileProvider
 import kotlinx.coroutines.delay
-import stoyck.vitrina.BuildConfig
 import stoyck.vitrina.R
 import stoyck.vitrina.util.FileUtil
 import stoyck.vitrina.util.openPermissions
@@ -38,24 +35,6 @@ class SaveArtworkOnDiskUseCase @Inject constructor(
         val byLine: String,
         val attribution: String
     )
-
-    private fun getImagesDirectory(): File {
-        // Returns the directory the user definitely cannot find :(
-        //return Environment.getExternalStoragePublicDirectory(
-        //        Environment.DIRECTORY_PICTURES
-        //)
-        return File("/storage/emulated/0/Vitrina").apply { mkdirs() }
-    }
-
-    private fun showSavedImage(file: File) {
-        val uri = FileProvider.getUriForFile(
-            context,
-            BuildConfig.VITRINA_AUTHORITY,
-            file
-        )
-
-        showSavedImage(uri)
-    }
 
     private fun showSavedImage(uri: Uri) {
         val intent = Intent()
@@ -82,16 +61,23 @@ class SaveArtworkOnDiskUseCase @Inject constructor(
         }
     }
 
+    // For Q:
     // https://stackoverflow.com/questions/56904485/how-to-save-an-image-in-android-q-using-mediastore/56990305
-    @RequiresApi(Build.VERSION_CODES.Q)
+    // For other:
+    // https://stackoverflow.com/questions/8560501/android-save-image-into-gallery
     private fun copyFile(
         file: File,
         fileName: String
     ): Uri {
         val contentValues = ContentValues()
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-        // contentValues.put(MediaStore.MediaColumns.MIME_TYPE, )
-        contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+        contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        contentValues.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            contentValues.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis())
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+        }
 
         val resolver = context.contentResolver
 
@@ -117,25 +103,6 @@ class SaveArtworkOnDiskUseCase @Inject constructor(
         }
     }
 
-    suspend fun copyFileLegacy(
-        file: File,
-        fileName: String
-    ): File {
-        val newFile = File(getImagesDirectory(), fileName)
-
-        if (!newFile.exists()) {
-            newFile.createNewFile()
-            FileUtil.copy(file, newFile)
-        } else {
-            val alreadyExistsMessage =
-                context.getString(R.string.message_file_already_exists_at)
-
-            showToast(context, alreadyExistsMessage.format(newFile.path))
-        }
-
-        return newFile
-    }
-
     suspend operator fun invoke(params: Params) {
         // If not ui thread, this might run earlier than previous toast calls
         uiThread {
@@ -151,14 +118,8 @@ class SaveArtworkOnDiskUseCase @Inject constructor(
 
         val name = "$baseFileName.jpg"
 
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val uri = copyFile(file, name)
-            uiThread { showSavedImage(uri) }
-        } else {
-            val newFile = copyFileLegacy(file, name)
-            uiThread { showSavedImage(newFile) }
-        }
+        val uri = copyFile(file, name)
+        uiThread { showSavedImage(uri) }
 
         showToast(context, R.string.message_image_saved_successfully)
     }

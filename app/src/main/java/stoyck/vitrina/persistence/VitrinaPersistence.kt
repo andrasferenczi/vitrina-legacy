@@ -33,13 +33,15 @@ class VitrinaPersistence
                 minUpvoteCount = 580
             )
         )
+
+        const val SUBREDDITS_KEY = "subreddits"
     }
 
     var shuffle by booleanPref("shuffle", false)
 
     var over18 by booleanPref("over18", false)
 
-    var subreddits by gsonPref("subreddits", INITIAL_SUBREDDITS)
+    var subreddits by gsonPref(SUBREDDITS_KEY, INITIAL_SUBREDDITS)
 
     var previousPosts by gsonPref<List<PersistedPostData>>("posts", emptyList())
 }

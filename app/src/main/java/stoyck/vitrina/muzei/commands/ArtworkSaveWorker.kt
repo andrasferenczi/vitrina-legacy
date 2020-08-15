@@ -3,6 +3,7 @@ package stoyck.vitrina.muzei.commands
 import android.content.Context
 import android.widget.Toast
 import androidx.work.*
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -69,14 +70,15 @@ class ArtworkSaveWorker(
         val paramsRaw = inputData.getString(KEY_PARAMS)
 
         if (paramsRaw == null) {
-            // todo: log
+            FirebaseCrashlytics.getInstance()
+                .recordException(RuntimeException("No params received"))
             return@withContext Result.failure()
         }
 
         val params =
             gson.fromJson(paramsRaw, SaveArtworkOnDiskUseCase.Params::class.java)
 
-        val result = saveArtworkOnDiskUseCase(params)
+        saveArtworkOnDiskUseCase(params)
 
         Result.success()
     }

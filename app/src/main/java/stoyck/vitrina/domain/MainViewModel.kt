@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.*
 import stoyck.vitrina.R
 import stoyck.vitrina.domain.preferences.PreferencesData
@@ -142,10 +143,11 @@ class MainViewModel @Inject constructor(
             else -> {
                 val noIdeaError = context.getString(R.string.error_no_idea)
                 setUserMessage(noIdeaError)
+
+                FirebaseCrashlytics.getInstance()
+                    .recordException(exception)
             }
         }
-
-        // Todo: log error - at least the unknown ones
 
         return true
     }

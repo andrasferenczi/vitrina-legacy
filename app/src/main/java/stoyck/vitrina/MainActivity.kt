@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         subredditsRecyclerView.onMessage = {
-            viewModel.userMessage.value = it
+            viewModel.setUserMessageAsync(it)
         }
 
         viewModel.isLoading.observe(this) { loading ->

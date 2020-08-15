@@ -10,6 +10,7 @@ import stoyck.vitrina.domain.preferences.PreferencesData
 import stoyck.vitrina.domain.usecase.*
 import stoyck.vitrina.persistence.data.PersistedSubredditData
 import stoyck.vitrina.ui.suggestion.SubredditSuggestionData
+import stoyck.vitrina.util.Debouncer
 import java.net.UnknownHostException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -81,11 +82,29 @@ class MainViewModel @Inject constructor(
     val subredditSuggestions: LiveData<List<SubredditSuggestionData>> = _subredditSuggestions
 
     // Can be set from anywhere
-    val userMessage: MutableLiveData<String?> = MutableLiveData(null)
+    private val _userMessage: MutableLiveData<String?> = MutableLiveData(null)
+
+    val userMessage: LiveData<String?> = _userMessage
+
+    // So that when the user returns to the app,
+    // the last toast is not shown
+    private val userMessageClearupDebouncer = Debouncer(delayMillis = 100L)
+
+    fun setUserMessageAsync(message: String?) {
+        scope.launch {
+            setUserMessage(message)
+        }
+    }
 
     private suspend fun setUserMessage(message: String?) {
         withContext(Dispatchers.Main) {
-            userMessage.value = message
+            _userMessage.value = message
+
+            if (message != null) {
+                userMessageClearupDebouncer {
+                    _userMessage.value = null
+                }
+            }
         }
     }
 

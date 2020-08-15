@@ -150,6 +150,14 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
+
+        val gotoGithubButton = header.findViewById(R.id.goToGithubButton) as Button
+
+        gotoGithubButton.setOnClickListener {
+            val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/andrasferenczi/vitrina"))
+            startActivity(browserIntent)
+        }
     }
 
     private fun renderSearchState() {

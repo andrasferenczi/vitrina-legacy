@@ -105,3 +105,5 @@ lint/tmp/
 # Devs can get it like that:
 # https://support.google.com/firebase/answer/7015592
 /app/google-services.json
+
+output-metadata.json

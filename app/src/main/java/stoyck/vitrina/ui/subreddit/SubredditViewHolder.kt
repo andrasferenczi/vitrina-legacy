@@ -3,12 +3,14 @@ package stoyck.vitrina.ui.subreddit
 import android.annotation.SuppressLint
 import android.content.Context
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_subreddit_entry.view.*
+import stoyck.vitrina.BuildConfig
 import stoyck.vitrina.persistence.data.PersistedSubredditData
 import stoyck.vitrina.ui.recyclerview.OnStartDragListener
 import stoyck.vitrina.util.DebouncedTextWatcher
@@ -23,7 +25,19 @@ class SubredditViewHolder(
 
     @SuppressLint("ClickableViewAccessibility")
     fun bind(content: PersistedSubredditData) {
-        val position = adapterPosition
+        // This is a bad idea:
+        // val position = adapterPosition
+        // do NOT do this
+        // because when reordering the position will change, but it will not rerender
+        //
+        // however: adapterPosition returned -1 for some reason earlier, but cannot reproduce it now
+
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                "vitrina_render",
+                "Rendering {$position -> ${content.name to content.minUpvoteCount}}"
+            )
+        }
 
         with(super.itemView) {
             fun updateData() {
@@ -32,7 +46,7 @@ class SubredditViewHolder(
                 val newData = content.copy(minUpvoteCount = upvoteCount)
                 onSubredditClickedListener.onSubredditChanged(
                     newData,
-                    position
+                    adapterPosition
                 )
             }
 

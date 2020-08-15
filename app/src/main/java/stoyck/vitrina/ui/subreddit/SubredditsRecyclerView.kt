@@ -2,8 +2,10 @@ package stoyck.vitrina.ui.subreddit
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import stoyck.vitrina.BuildConfig
 import stoyck.vitrina.R
 import stoyck.vitrina.persistence.data.PersistedSubredditData
 import stoyck.vitrina.ui.recyclerview.CustomItemTouchHelper
@@ -61,13 +63,28 @@ class SubredditsRecyclerView @JvmOverloads constructor(
         subredditAdapter.notifyDataSetChanged()
     }
 
-    override fun onItemMove(fromPosition: Int, toPosition: Int) {
-        subredditAdapter.onItemMove(fromPosition, toPosition)
+    private fun triggerSave(
+        action: (() -> Unit)? = null
+    ) {
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                "vitrina_save",
+                "Saving subreddits: [${subredditAdapter.data.toList()
+                    .joinToString { (it.name to it.minUpvoteCount).toString() }}]"
+            )
+        }
 
         this.onSaveDebouncer {
             val data = subredditAdapter.data.toList()
             onSave?.invoke(data)
+            action?.invoke()
         }
+    }
+
+    override fun onItemMove(fromPosition: Int, toPosition: Int) {
+        subredditAdapter.onItemMove(fromPosition, toPosition)
+
+        this.triggerSave()
     }
 
     override fun onItemDismiss(position: Int) {
@@ -76,9 +93,7 @@ class SubredditsRecyclerView @JvmOverloads constructor(
 
         subredditAdapter.onItemDismiss(position)
 
-        this.onSaveDebouncer {
-            val data = subredditAdapter.data.toList()
-            onSave?.invoke(data)
+        this.triggerSave {
             onMessage?.invoke(message)
         }
     }
@@ -94,9 +109,6 @@ class SubredditsRecyclerView @JvmOverloads constructor(
         // No notification, because the edittext contains the data
         // subredditAdapter.notifyItemChanged(position)
 
-        this.onSaveDebouncer {
-            val data = subredditAdapter.data.toList()
-            onSave?.invoke(data)
-        }
+        this.triggerSave()
     }
 }

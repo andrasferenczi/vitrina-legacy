@@ -104,24 +104,39 @@ class SaveArtworkOnDiskUseCase @Inject constructor(
     }
 
     suspend operator fun invoke(params: Params) {
-        // If not ui thread, this might run earlier than previous toast calls
-        uiThread {
-            ensureStoragePermission()
+        // It seems that below API 29 permission is always needed to modify anything on the drive
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            uiThread {
+                ensureStoragePermission()
+            }
         }
 
-        val file = params.existingFile
+        try {
+            val file = params.existingFile
 
-        val baseFileName = (params.title + "_" + params.byLine.take(20) + "_" + params.attribution)
-            .toLowerCase(Locale.ROOT)
-            .trim()
-            .replace(Regex("[^a-zA-Z0-9\\\\.\\\\-]"), "_")
+            val baseFileName =
+                (params.title + "_" + params.byLine.take(20) + "_" + params.attribution)
+                    .toLowerCase(Locale.ROOT)
+                    .trim()
+                    .replace(Regex("[^a-zA-Z0-9\\\\.\\\\-]"), "_")
 
-        val name = "$baseFileName.jpg"
+            val name = "$baseFileName.jpg"
 
-        val uri = copyFile(file, name)
-        uiThread { showSavedImage(uri) }
+            val uri = copyFile(file, name)
+            uiThread { showSavedImage(uri) }
 
-        showToast(context, R.string.message_image_saved_successfully)
+        } catch (e: Exception) {
+            // just make sure this is not the issue
+            // no storage permission seems necessary on newer devices,
+            // since the image is saved in the default image directory
+            // and Muzei allows access to their file
+            uiThread {
+                ensureStoragePermission()
+            }
+            throw e
+        }
+
+        // The image is shown anyway, no confirmation is needed
     }
 
 }

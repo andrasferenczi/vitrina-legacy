@@ -7,6 +7,7 @@ import com.google.android.apps.muzei.api.provider.Artwork
 import com.google.android.apps.muzei.api.provider.MuzeiArtProvider
 import stoyck.vitrina.BuildConfig
 import stoyck.vitrina.R
+import java.io.InputStream
 
 class VitrinaArtProvider : MuzeiArtProvider() {
 
@@ -22,6 +23,10 @@ class VitrinaArtProvider : MuzeiArtProvider() {
 
         // This is the important part
         VitrinaArtWorker.enqueueLoad(context)
+    }
+
+    override fun openFile(artwork: Artwork): InputStream {
+        return super.openFile(artwork)
     }
 
     override fun getCommandActions(artwork: Artwork): List<RemoteActionCompat> {

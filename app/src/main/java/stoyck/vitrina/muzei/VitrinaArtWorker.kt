@@ -3,14 +3,13 @@ package stoyck.vitrina.muzei
 import android.content.Context
 import android.util.Log
 import androidx.work.*
-import com.google.android.apps.muzei.api.provider.Artwork
-import com.google.android.apps.muzei.api.provider.ProviderClient
 import com.google.android.apps.muzei.api.provider.ProviderContract
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import stoyck.vitrina.BuildConfig
 import stoyck.vitrina.VitrinaApplication
-import stoyck.vitrina.domain.usecase.RequestMuzeiArtworksAndSavePostsUseCase
+import stoyck.vitrina.domain.usecase.TryRetrieveNextMuzeiArtworkUseCase
+import stoyck.vitrina.muzei.ext.readArtworks
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
@@ -43,7 +42,7 @@ class VitrinaArtWorker(
     }
 
     @Inject
-    lateinit var requestArtworkUseCase: RequestMuzeiArtworksAndSavePostsUseCase
+    lateinit var tryRetrieveNextArtworkUseCase: TryRetrieveNextMuzeiArtworkUseCase
 
     init {
         (context.applicationContext as VitrinaApplication)
@@ -51,35 +50,12 @@ class VitrinaArtWorker(
             .inject(this)
     }
 
-    fun ProviderClient.queryAllArtworks(): List<Artwork> {
-        return applicationContext.contentResolver
-            .query(contentUri, null, null, null, null)
-            .use { cursor ->
-
-                if (cursor == null) {
-                    return@use emptyList()
-                }
-
-                val result = mutableListOf<Artwork>()
-
-                cursor.moveToFirst()
-
-                while (!cursor.isAfterLast) {
-                    val artwork = Artwork.fromCursor(cursor)
-                    result.add(artwork)
-                    cursor.moveToNext()
-                }
-
-                return@use result
-            }
-    }
-
     override suspend fun doWork(): Result = withContext(SINGLE_THREAD_CONTEXT) {
         if (BuildConfig.DEBUG) {
             Log.i(TAG, "Started doing work")
         }
 
-        val artworks = requestArtworkUseCase()
+        val artworks = tryRetrieveNextArtworkUseCase()
         val provider = ProviderContract
             .getProviderClient(
                 applicationContext,
@@ -89,7 +65,7 @@ class VitrinaArtWorker(
         // keep the last one as first when setting
         val latest = provider.lastAddedArtwork
 
-        val prev = provider.queryAllArtworks()
+        val prev = provider.readArtworks()
 
         val newArtworks =
             if (latest == null)

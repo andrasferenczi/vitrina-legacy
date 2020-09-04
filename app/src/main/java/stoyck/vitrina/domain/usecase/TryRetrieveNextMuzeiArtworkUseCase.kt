@@ -9,10 +9,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RequestMuzeiArtworksAndSavePostsUseCase @Inject constructor(
-    private val loadPostsUseCase: LoadPostsUseCase,
-    private val savePostsUseCase: SavePostsUseCase,
-    private val loadImagesUseCase: RetrieveLatestImagesUseCase
+class TryRetrieveNextMuzeiArtworkUseCase @Inject constructor(
+    private val tryRetrieveNextPostUseCase: TryRetrieveNextPostAndMarkAsShownUseCase,
 ) {
 
     private fun RedditPost.toArtwork(): Artwork {
@@ -26,6 +24,7 @@ class RequestMuzeiArtworksAndSavePostsUseCase @Inject constructor(
         )
     }
 
+    // Todo: This is not good
     suspend operator fun invoke(): List<Artwork> {
         // Load images already takes the previous posts into account
         val posts = loadImagesUseCase()

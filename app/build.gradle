@@ -111,6 +111,11 @@ dependencies {
     implementation 'hu.autsoft:krate:0.4.0'
     implementation 'hu.autsoft:krate-gson:0.4.0'
 
+    // image
+    // https://mvnrepository.com/artifact/com.github.bumptech.glide/glide
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+
+
     // muzei
     implementation 'com.google.android.apps.muzei:muzei-api:3.4.0'
 

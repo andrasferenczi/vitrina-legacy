@@ -11,7 +11,8 @@ class TryRetrieveNextPostAndMarkAsShownUseCase @Inject constructor(
     private val loadSubredditsUseCase: LoadSubredditsUseCase,
     private val loadSettingsUseCase: LoadSettingsUseCase,
     private val loadValidFuturePostsUseCase: LoadValidFuturePostsUseCase,
-    private val markPostsAsShownUseCase: MarkPostsAsShownUseCase
+    private val markPostsAsShownUseCase: MarkPostsAsShownUseCase,
+    private val updateFuturePostsFromRedditUseCase: UpdateFuturePostsFromRedditUseCase
 ) {
 
     private suspend fun loadSubredditsOrdered(settings: PreferencesData): List<PersistedSubredditData> {
@@ -35,7 +36,6 @@ class TryRetrieveNextPostAndMarkAsShownUseCase @Inject constructor(
 
         val futurePosts = loadValidFuturePostsUseCase()
 
-        @Suppress("UnnecessaryVariable")
         val nextImage = subreddits
             // optimized
             .asSequence()
@@ -53,16 +53,21 @@ class TryRetrieveNextPostAndMarkAsShownUseCase @Inject constructor(
             // not likely to happen, because it has been validated
             // to contain something for each id
             .filterNotNull()
-            // list can be empty for each subreddit
-            .map { it.firstOrNull() }
-            // because of earlier line
-            .filterNotNull()
+            .flatMap { it.asSequence() }
             // just one is needed
             .firstOrNull()
-        // Retry happens if it is out of subreddits
-        // Worst case is that loadValidFuturePostsUseCase() fetches,
-        // does not find anything and then reloads
-            ?: return this(retryCount - 1)
+
+        if (nextImage == null) {
+            // Retry happens if it is out of subreddits
+            // Worst case is that loadValidFuturePostsUseCase() fetches,
+            // does not find anything and then reloads
+
+            // It is important that the list of next post is not necessarily empty
+            // it can happen that it is full of bad posts that are below upvote count
+            updateFuturePostsFromRedditUseCase()
+
+            return this(retryCount - 1)
+        }
 
         markPostsAsShownUseCase(listOf(nextImage))
 

@@ -4,14 +4,16 @@ import android.net.Uri
 import com.google.android.apps.muzei.api.provider.Artwork
 import stoyck.vitrina.network.data.RedditPost
 import stoyck.vitrina.network.data.fullPostLink
-import stoyck.vitrina.persistence.data.PersistedPostData
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TryRetrieveNextMuzeiArtworkUseCase @Inject constructor(
-    private val tryRetrieveNextPostUseCase: TryRetrieveNextPostAndMarkAsShownUseCase,
+    private val tryRetrieveSingleImage: TryRetrieveSingleImageUseCase
 ) {
+
+    data class Result(val artwork: Artwork, val temporaryFile: File)
 
     private fun RedditPost.toArtwork(): Artwork {
         return Artwork(
@@ -24,36 +26,19 @@ class TryRetrieveNextMuzeiArtworkUseCase @Inject constructor(
         )
     }
 
-    // Todo: This is not good
-    suspend operator fun invoke(): List<Artwork> {
-        // Load images already takes the previous posts into account
-        val posts = loadImagesUseCase()
+    suspend operator fun invoke(): Result? {
+        /**
+         * Image retrieval can only be done one by one
+         * This makes sure that cache size is always enough
+         */
 
-        val artworks = posts
-            .map { it.toArtwork() }
+        val image = tryRetrieveSingleImage()
+            ?: return null
 
-        updatePersistedPosts(posts)
-
-        return artworks
-    }
-
-    private suspend fun updatePersistedPosts(posts: List<RedditPost>) {
-        val previousPosts = loadPostsUseCase()
-        val newPosts = posts.map {
-            PersistedPostData(
-                id = it.id,
-                imageLink = it.url
-            )
-        }
-
-        val allPosts = listOf(
-            *previousPosts.toTypedArray(),
-            *newPosts.toTypedArray()
+        return Result(
+            image.originalPost.toArtwork(),
+            image.temporaryImageLocation
         )
-            // do not save thousands of posts - bad for serialization
-            .takeLast(200)
-
-        savePostsUseCase(allPosts)
     }
 
 }

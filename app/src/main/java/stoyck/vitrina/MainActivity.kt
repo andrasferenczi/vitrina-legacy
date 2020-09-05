@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.TextWatcher
 import android.view.Menu
 import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -27,6 +28,12 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var viewModel: MainViewModel
+
+    // There is only add and they need to be removed eventually
+    // to make sure that only one of them exists
+    private var subredditInputTextWatcher: TextWatcher? = null
+    private var minimumImageWidthTextWatcher: TextWatcher? = null
+    private var minimumImageHeightTextWatcher: TextWatcher? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as VitrinaApplication).appComponent
@@ -103,6 +110,34 @@ class MainActivity : AppCompatActivity() {
             viewModel.updatePreferences(current.copy(isOver18 = isChecked))
         }
 
+
+        val textWatcherMinWidth = this.minimumImageWidthTextWatcher
+        if (textWatcherMinWidth == null) {
+            val newTextWatcher = DebouncedTextWatcher(300L) { text ->
+                val newValue = text.toIntOrNull() ?: return@DebouncedTextWatcher
+
+                val current = viewModel.preferencesState.value!!
+                viewModel.updatePreferences(current.copy(minimumImageWidth = newValue))
+            }
+
+            this.minimumImageWidthTextWatcher = newTextWatcher
+            imageMinimumWidthInput.addTextChangedListener(newTextWatcher)
+        }
+
+        val textWatcherMinHeight = this.minimumImageHeightTextWatcher
+        if (textWatcherMinHeight == null) {
+            val newTextWatcher = DebouncedTextWatcher(300L) { text ->
+                val newValue = text.toIntOrNull() ?: return@DebouncedTextWatcher
+
+                val current = viewModel.preferencesState.value!!
+                viewModel.updatePreferences(current.copy(minimumImageHeight = newValue))
+            }
+
+            this.minimumImageHeightTextWatcher = newTextWatcher
+            imageMinimumHeightInput.addTextChangedListener(newTextWatcher)
+        }
+
+
         viewModel.preferencesState.observe(this) {
             if (it == null) {
                 return@observe
@@ -134,6 +169,14 @@ class MainActivity : AppCompatActivity() {
 
             if (over18Switch.isChecked != it.isOver18) {
                 over18Switch.isChecked = it.isOver18
+            }
+
+            if (imageMinimumWidthInput.text?.toString()?.toIntOrNull() != it.minimumImageWidth) {
+                imageMinimumWidthInput.setText(it.minimumImageWidth.toString())
+            }
+
+            if (imageMinimumHeightInput.text?.toString()?.toIntOrNull() != it.minimumImageHeight) {
+                imageMinimumHeightInput.setText(it.minimumImageHeight.toString())
             }
         }
 
@@ -177,10 +220,18 @@ class MainActivity : AppCompatActivity() {
                     toDefaultMenu()
                 }
 
-                subredditInputText.addTextChangedListener(
-                    DebouncedTextWatcher(300L) { text ->
+
+                // :( - beauty of a code in the non-declarative ui world
+                val textWatcher = this.subredditInputTextWatcher
+
+                if (textWatcher == null) {
+                    val newTextWatcher = DebouncedTextWatcher(300L) { text ->
                         viewModel.updateSuggestionList(text)
-                    })
+                    }
+
+                    this.subredditInputTextWatcher = newTextWatcher
+                    subredditInputText.addTextChangedListener(newTextWatcher)
+                }
 
                 subredditInputText.setOnEditorActionListener { view, id, event ->
                     val text = view.text.toString()

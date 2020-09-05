@@ -2,7 +2,6 @@ package stoyck.vitrina.domain.usecase
 
 import stoyck.vitrina.domain.preferences.PreferencesData
 import stoyck.vitrina.persistence.VitrinaPersistence
-import stoyck.vitrina.persistence.data.PersistedPostData
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,6 +13,9 @@ class SaveSettingsUseCase @Inject constructor(
     suspend operator fun invoke(preferences: PreferencesData) {
         persistence.over18 = preferences.isOver18
         persistence.shuffle = preferences.shuffle
+
+        persistence.minimumImageWidth = preferences.minimumImageWidth
+        persistence.minimumImageHeight = preferences.minimumImageHeight
     }
 
 }

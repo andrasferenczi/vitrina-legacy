@@ -4,6 +4,7 @@ import android.content.Context
 import hu.autsoft.krate.SimpleKrate
 import hu.autsoft.krate.booleanPref
 import hu.autsoft.krate.gson.gsonPref
+import hu.autsoft.krate.intPref
 import stoyck.vitrina.persistence.data.PersistedFuturePosts
 import stoyck.vitrina.persistence.data.PersistedPostData
 import stoyck.vitrina.persistence.data.PersistedSubredditData
@@ -41,6 +42,9 @@ class VitrinaPersistence
     var shuffle by booleanPref("shuffle", false)
 
     var over18 by booleanPref("over18", false)
+
+    var minimumImageWidth by intPref("minimumImageWidth", 100)
+    var minimumImageHeight by intPref("minimumImageHeight", 100)
 
     var subreddits by gsonPref(SUBREDDITS_KEY, INITIAL_SUBREDDITS)
 

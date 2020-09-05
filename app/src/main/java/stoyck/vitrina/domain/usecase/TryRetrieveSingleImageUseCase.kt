@@ -12,6 +12,7 @@ import javax.inject.Singleton
 @Singleton
 class TryRetrieveSingleImageUseCase @Inject constructor(
     private val context: Context,
+    private val loadSettings: LoadSettingsUseCase,
     private val retrieveNextPost: TryRetrieveNextPostAndMarkAsShownUseCase,
     private val deleteAllImagesFromCache: DeleteAllImagesFromCacheUseCase
 ) {
@@ -46,9 +47,11 @@ class TryRetrieveSingleImageUseCase @Inject constructor(
         val bitmap = loadBitmap(post.url)
 
         // Keep loading new posts until there is a good image
-        // Next post saves what images has it already returned
-        // Todo: get image size from a settings
-        if (bitmap.width < 100 || bitmap.height < 100) {
+        // 'Next post' usecase saves what images it has already returned
+        val preferences = loadSettings()
+        if (bitmap.width < preferences.minimumImageWidth
+            || bitmap.height < preferences.minimumImageHeight
+        ) {
             return this()
         }
 

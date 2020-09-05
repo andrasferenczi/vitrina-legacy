@@ -85,7 +85,7 @@
                             android:paddingBottom="@dimen/spacing__3"
                             android:textStyle="bold"
                             android:textSize="@dimen/typography__body"
-                            android:text="Minimum Image Size" />
+                            android:text="Minimum Image Resolution" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -105,7 +105,7 @@
                                 android:layout_weight="1" />
 
                             <EditText
-                                android:id="@+id/imageMinimumWidth"
+                                android:id="@+id/imageMinimumWidthInput"
                                 android:layout_width="100dp"
                                 android:layout_height="wrap_content"
                                 android:inputType="numberSigned"
@@ -135,7 +135,7 @@
                                 android:layout_weight="1" />
 
                             <EditText
-                                android:id="@+id/imageMinimumHeight"
+                                android:id="@+id/imageMinimumHeightInput"
                                 android:layout_width="100dp"
                                 android:layout_height="wrap_content"
                                 android:inputType="numberSigned"

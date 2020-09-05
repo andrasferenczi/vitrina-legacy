@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.content_subreddit_list.*
 import kotlinx.android.synthetic.main.content_subreddit_suggestion.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 import stoyck.vitrina.domain.MainViewModel
 import stoyck.vitrina.util.DebouncedTextWatcher
 import stoyck.vitrina.util.hideKeyboard
@@ -95,20 +96,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupSettings() {
-        // Shuffle
-        val shuffleSwitch = navigationView
-            .menu
-            .findItem(R.id.settingsShuffle)
-            ?.actionView as? Switch ?: throw RuntimeException("shuffle not found")
-
-        // Over 18
-        val over18Switch = navigationView
-            .menu
-            .findItem(R.id.settingsOver18)
-            ?.actionView as? Switch ?: throw RuntimeException("over18 not found")
-
-        //
-
         shuffleSwitch.setOnCheckedChangeListener { _, isChecked ->
             val current = viewModel.preferencesState.value!!
             viewModel.updatePreferences(current.copy(shuffle = isChecked))
@@ -125,12 +112,7 @@ class MainActivity : AppCompatActivity() {
             shuffleSwitch.isChecked = it.shuffle
         }
 
-        val header = navigationView
-            .getHeaderView(0) as LinearLayout
-
-        val leaveRatingButton = header.findViewById(R.id.goToStoreButton) as Button
-
-        leaveRatingButton.setOnClickListener {
+        goToStoreButton.setOnClickListener {
             val appPackageName =
                 packageName // getPackageName() from Context or Activity object
 
@@ -151,9 +133,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val gotoGithubButton = header.findViewById(R.id.goToGithubButton) as Button
-
-        gotoGithubButton.setOnClickListener {
+        goToGithubButton.setOnClickListener {
             val browserIntent =
                 Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/andrasferenczi/vitrina"))
             startActivity(browserIntent)

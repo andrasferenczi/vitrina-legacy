@@ -6,9 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.Switch
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -100,16 +97,44 @@ class MainActivity : AppCompatActivity() {
             val current = viewModel.preferencesState.value!!
             viewModel.updatePreferences(current.copy(shuffle = isChecked))
         }
-        viewModel.preferencesState.observe(this) {
-            over18Switch.isChecked = it.isOver18
-        }
 
         over18Switch.setOnCheckedChangeListener { _, isChecked ->
             val current = viewModel.preferencesState.value!!
             viewModel.updatePreferences(current.copy(isOver18 = isChecked))
         }
+
         viewModel.preferencesState.observe(this) {
-            shuffleSwitch.isChecked = it.shuffle
+            if (it == null) {
+                return@observe
+            }
+
+            /**
+             * This is some complicated shit:
+             *
+             * ===
+             *
+             * Default data: (shuffle: true, over: false)
+             * Loaded data in settings: (shuffle: true, over: true)
+             *
+             * This is a problem, because the shuffle toggle will trigger saves
+             *
+             * Current issues:
+             * - different default data than what is saved
+             *      - this is the main issue, because it will copied from the toggle's callback
+             *          when saving
+             * - async load/save and only 1 thread
+             *      - task execution is posted, but the ordering of the coroutines change
+             *      - later load in the viewmodel than the first save triggered from checkbox
+             * - save is triggered, even when the same value is set in toggle
+             */
+
+            if (shuffleSwitch.isChecked != it.shuffle) {
+                shuffleSwitch.isChecked = it.shuffle
+            }
+
+            if (over18Switch.isChecked != it.isOver18) {
+                over18Switch.isChecked = it.isOver18
+            }
         }
 
         goToStoreButton.setOnClickListener {

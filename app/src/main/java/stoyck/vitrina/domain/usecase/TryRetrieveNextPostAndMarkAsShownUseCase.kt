@@ -44,8 +44,9 @@ class TryRetrieveNextPostAndMarkAsShownUseCase @Inject constructor(
                 val posts = futurePosts.futurePostsBySubredditId[subreddit.id]
                     ?.filter { post -> post.score > subreddit.minUpvoteCount }
 
-                if (settings.isOver18) {
-                    posts?.filter { post -> !post.over18 }
+                val isOver18Disabled = !settings.isOver18
+                if (isOver18Disabled) {
+                    posts?.filterNot { post -> post.over18 }
                 } else {
                     posts
                 }

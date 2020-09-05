@@ -60,10 +60,10 @@ class MainViewModel @Inject constructor(
 
     //
 
-    private val _preferencesState: MutableLiveData<PreferencesData> =
-        MutableLiveData(PreferencesData.DEFAULT)
+    private val _preferencesState: MutableLiveData<PreferencesData?> =
+        MutableLiveData(null) // Only the initial one is null
 
-    val preferencesState: LiveData<PreferencesData> = _preferencesState
+    val preferencesState: LiveData<PreferencesData?> = _preferencesState
 
     private val _menuState: MutableLiveData<MenuState> = MutableLiveData(MenuState.Default)
 

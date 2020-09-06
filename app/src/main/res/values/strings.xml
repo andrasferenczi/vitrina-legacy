@@ -35,6 +35,9 @@
     <!-- Action -->
     <string name="action_save_title">Save</string>
     <string name="action_save_description">Save the artwork</string>
+    <string name="action_delete_from_muzei_title">Remove</string>
+    <string name="action_delete_from_muzei_description">Remove from Muzei</string>
+
     <string name="action_save_command_received">Started artwork save process</string>
     <string name="action_save_worker_start">Saving artwork</string>
 

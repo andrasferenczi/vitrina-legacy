@@ -7,7 +7,6 @@ import com.google.android.apps.muzei.api.provider.Artwork
 import com.google.android.apps.muzei.api.provider.MuzeiArtProvider
 import stoyck.vitrina.BuildConfig
 import stoyck.vitrina.R
-import java.io.InputStream
 
 class VitrinaArtProvider : MuzeiArtProvider() {
 
@@ -23,10 +22,6 @@ class VitrinaArtProvider : MuzeiArtProvider() {
 
         // This is the important part
         VitrinaArtWorker.enqueueLoad(context)
-    }
-
-    override fun openFile(artwork: Artwork): InputStream {
-        return super.openFile(artwork)
     }
 
     override fun getCommandActions(artwork: Artwork): List<RemoteActionCompat> {
@@ -45,7 +40,18 @@ class VitrinaArtProvider : MuzeiArtProvider() {
                     artwork,
                     VitrinaCommandReceiver.Companion.VitrinaCommand.Save
                 )
-            )
+            ),
+            RemoteActionCompat(
+                IconCompat.createWithResource(context, R.drawable.ic_delete),
+                context.getString(R.string.action_delete_from_muzei_title),
+                context.getString(R.string.action_delete_from_muzei_description),
+                VitrinaCommandReceiver.createPendingIntent(
+                    context,
+                    artwork,
+                    VitrinaCommandReceiver.Companion.VitrinaCommand.DeleteFromMuzei
+                )
+            ).apply { this.setShouldShowIcon(false) }
+
         )
     }
 

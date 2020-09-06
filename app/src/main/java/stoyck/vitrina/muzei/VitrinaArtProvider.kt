@@ -40,7 +40,18 @@ class VitrinaArtProvider : MuzeiArtProvider() {
                     artwork,
                     VitrinaCommandReceiver.Companion.VitrinaCommand.Save
                 )
-            )
+            ),
+            RemoteActionCompat(
+                IconCompat.createWithResource(context, R.drawable.ic_delete),
+                context.getString(R.string.action_delete_from_muzei_title),
+                context.getString(R.string.action_delete_from_muzei_description),
+                VitrinaCommandReceiver.createPendingIntent(
+                    context,
+                    artwork,
+                    VitrinaCommandReceiver.Companion.VitrinaCommand.DeleteFromMuzei
+                )
+            ).apply { this.setShouldShowIcon(false) }
+
         )
     }
 

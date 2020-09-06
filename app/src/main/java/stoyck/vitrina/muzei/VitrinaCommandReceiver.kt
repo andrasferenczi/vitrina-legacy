@@ -14,6 +14,8 @@ import stoyck.vitrina.VitrinaApplication
 import stoyck.vitrina.domain.usecase.SaveArtworkOnDiskUseCase
 import stoyck.vitrina.muzei.commands.ArtworkSaveWorker
 import stoyck.vitrina.muzei.commands.VitrinaProtocolConstants
+import stoyck.vitrina.muzei.ext.removeArtworksById
+import stoyck.vitrina.muzei.ext.retrieveVitrinaProviderClient
 import java.io.File
 import javax.inject.Inject
 
@@ -48,6 +50,7 @@ class VitrinaCommandReceiver : BroadcastReceiver() {
 
         val extras = intent.extras ?: quit()
 
+        val artworkId = extras.getLong(VitrinaProtocolConstants.KEY_ARTWORK_ID)
         val data = extras.getSerializable(VitrinaProtocolConstants.KEY_ARTWORK_DATA) as File?
         val uri = extras.getParcelable<Uri>(VitrinaProtocolConstants.KEY_ARTWORK_URI)
         val title = extras.getString(VitrinaProtocolConstants.KEY_ARTWORK_TITLE)
@@ -92,13 +95,27 @@ class VitrinaCommandReceiver : BroadcastReceiver() {
                     )
                 )
             }
+            VitrinaProtocolConstants.COMMAND_DELETE_FROM_MUZEI_KEY -> {
+                if (BuildConfig.DEBUG) {
+                    Toast.makeText(
+                        context,
+                        "Debug: Removing artwork",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+
+                context.retrieveVitrinaProviderClient()
+                    .removeArtworksById(context, artworkId)
+            }
         }
     }
 
     companion object {
 
         enum class VitrinaCommand(val id: String) {
-            Save(VitrinaProtocolConstants.COMMAND_SAVE_KEY);
+            Save(VitrinaProtocolConstants.COMMAND_SAVE_KEY),
+            DeleteFromMuzei(VitrinaProtocolConstants.COMMAND_DELETE_FROM_MUZEI_KEY);
         }
 
         fun createPendingIntent(
@@ -111,6 +128,7 @@ class VitrinaCommandReceiver : BroadcastReceiver() {
             val intent = Intent(context, VitrinaCommandReceiver::class.java).apply {
                 this.action = command.id
 
+                putExtra(VitrinaProtocolConstants.KEY_ARTWORK_ID, artwork.id)
                 putExtra(VitrinaProtocolConstants.KEY_ARTWORK_DATA, artwork.data)
                 putExtra(VitrinaProtocolConstants.KEY_ARTWORK_URI, artwork.persistentUri)
                 putExtra(VitrinaProtocolConstants.KEY_ARTWORK_TITLE, artwork.title)

@@ -3,6 +3,8 @@ package stoyck.vitrina.domain.usecase
 import stoyck.vitrina.network.RedditService
 import stoyck.vitrina.network.data.PostHint
 import stoyck.vitrina.network.data.RedditPost
+import stoyck.vitrina.persistence.data.PersistedFuturePosts
+import stoyck.vitrina.persistence.data.PersistedSubredditData
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -10,53 +12,48 @@ import javax.inject.Singleton
 @Singleton
 class RetrieveLatestImagesUseCase @Inject constructor(
     private val loadPosts: LoadPostsUseCase,
-    private val loadSettings: LoadSettingsUseCase,
     private val loadSubreddits: LoadSubredditsUseCase,
     private val reddit: RedditService
 ) {
 
-    suspend operator fun invoke(): List<RedditPost> {
+    private suspend fun loadPostsFromAllSubreddits(
+        subreddits: List<PersistedSubredditData>
+    ): PersistedFuturePosts {
+        val posts = subreddits.map {
+            // Todo: rate limit these calls, or reddit will do it
+            val posts = reddit.retrievePosts(it.name)
+
+            return@map it.id to posts
+        }.toMap()
+
+        return PersistedFuturePosts(posts)
+    }
+
+    /**
+     * Return type is used as the future posts to make sure the key is the id
+     */
+    suspend operator fun invoke(): PersistedFuturePosts {
         val previousPosts = loadPosts()
+        val subreddits = loadSubreddits()
+
         val existingPostIds = previousPosts.map { it.id }.toSet()
 
-        val subreddits = loadSubreddits()
-        val preferences = loadSettings()
-
-        val subredditNames = subreddits.map { it.name }
-
-        val posts = if (preferences.shuffle) {
-            reddit.retrievePosts(subredditNames)
-        } else {
-            subredditNames.flatMap {
-                // Todo: rate limit these calls, or reddit will do it
-                reddit.retrievePosts(it)
-            }
-        }
-
-        val minUpvoteCounts =
-            subreddits.associateBy(
-                { it.name.toLowerCase(Locale.ROOT) },
-                { it.minUpvoteCount }
-            )
-
         @Suppress("UnnecessaryVariable")
-        val images = posts
-            .asSequence()
-            // for easy indexing
-            .map { it.copy(subreddit = it.subreddit.toLowerCase(Locale.ROOT)) }
-            .filter { it.id !in existingPostIds }
-            .filter {
-                val minUpvoteCount = minUpvoteCounts[it.subreddit] ?: return@filter false
-                return@filter minUpvoteCount < it.score
-            }
-            .filterImages()
-            .toList()
-            // Do not load too many images,
-            // Might be too much load in network for a single time
-            .take(15)
+        val posts = loadPostsFromAllSubreddits(subreddits)
+            .postIdsRemoved(existingPostIds)
+            .processImages()
 
-        // use map so that it stops at the breakpoint
-        return images // .map { it }
+        return posts
+    }
+
+    private fun PersistedFuturePosts.processImages(): PersistedFuturePosts {
+        return PersistedFuturePosts(
+            this.futurePostsBySubredditId
+                .map { (key, value) ->
+                    key to value.asSequence().filterImages().toList()
+                }
+                .toMap()
+        )
     }
 
     private fun Sequence<RedditPost>.filterImages(): Sequence<RedditPost> {

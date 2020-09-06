@@ -13,7 +13,10 @@ class LoadSettingsUseCase @Inject constructor(
     suspend operator fun invoke(): PreferencesData {
         return PreferencesData(
             isOver18 = persistence.over18,
-            shuffle = persistence.shuffle
+            shuffle = persistence.shuffle,
+
+            minimumImageWidth = persistence.minimumImageWidth,
+            minimumImageHeight = persistence.minimumImageHeight
         )
     }
 

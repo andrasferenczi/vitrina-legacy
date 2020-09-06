@@ -3,12 +3,13 @@ package stoyck.vitrina.muzei
 import android.content.Context
 import android.util.Log
 import androidx.work.*
-import com.google.android.apps.muzei.api.provider.ProviderContract
+import com.google.android.apps.muzei.api.provider.ProviderClient
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import stoyck.vitrina.BuildConfig
 import stoyck.vitrina.VitrinaApplication
-import stoyck.vitrina.domain.usecase.RequestMuzeiArtworksAndSavePostsUseCase
+import stoyck.vitrina.domain.usecase.TryRetrieveNextMuzeiArtworkUseCase
+import stoyck.vitrina.muzei.ext.retrieveVitrinaProviderClient
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
@@ -41,7 +42,7 @@ class VitrinaArtWorker(
     }
 
     @Inject
-    lateinit var requestArtworkUseCase: RequestMuzeiArtworksAndSavePostsUseCase
+    lateinit var tryRetrieveNextMuzeiArtwork: TryRetrieveNextMuzeiArtworkUseCase
 
     init {
         (context.applicationContext as VitrinaApplication)
@@ -49,25 +50,31 @@ class VitrinaArtWorker(
             .inject(this)
     }
 
+    private suspend fun loadNewArtworks(
+        provider: ProviderClient,
+        newPictureCount: Int
+    ) {
+        for (i in 0 until newPictureCount) {
+            val (artwork, file) = tryRetrieveNextMuzeiArtwork() ?: break
+
+            provider.addArtwork(artwork)?.also {
+                applicationContext.contentResolver.openOutputStream(it)?.use { output ->
+                    file.inputStream().use { input ->
+                        input.copyTo(output)
+                    }
+                }
+            }
+        }
+    }
+
     override suspend fun doWork(): Result = withContext(SINGLE_THREAD_CONTEXT) {
         if (BuildConfig.DEBUG) {
             Log.i(TAG, "Started doing work")
         }
 
-        val artworks = requestArtworkUseCase()
-        val provider = ProviderContract
-            .getProviderClient(applicationContext, BuildConfig.VITRINA_AUTHORITY)
+        val provider = applicationContext.retrieveVitrinaProviderClient()
 
-        // keep the last one as first when setting
-        val latest = provider.lastAddedArtwork
-
-        val newArtworks =
-            if (latest == null)
-                artworks
-            else
-                listOf(latest, *artworks.toTypedArray())
-
-        provider.setArtwork(newArtworks)
+        loadNewArtworks(provider, 4)
 
         return@withContext Result.success()
     }

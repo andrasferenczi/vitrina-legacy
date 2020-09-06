@@ -4,6 +4,8 @@ import android.content.Context
 import hu.autsoft.krate.SimpleKrate
 import hu.autsoft.krate.booleanPref
 import hu.autsoft.krate.gson.gsonPref
+import hu.autsoft.krate.intPref
+import stoyck.vitrina.persistence.data.PersistedFuturePosts
 import stoyck.vitrina.persistence.data.PersistedPostData
 import stoyck.vitrina.persistence.data.PersistedSubredditData
 import javax.inject.Inject
@@ -41,7 +43,21 @@ class VitrinaPersistence
 
     var over18 by booleanPref("over18", false)
 
+    var minimumImageWidth by intPref("minimumImageWidth", 100)
+    var minimumImageHeight by intPref("minimumImageHeight", 100)
+
     var subreddits by gsonPref(SUBREDDITS_KEY, INITIAL_SUBREDDITS)
 
     var previousPosts by gsonPref<List<PersistedPostData>>("posts", emptyList())
+
+    /**
+     * Potential posts will be loaded into this cache
+     *
+     * This way when a single post is needed, it will not be necessary to query
+     * all data from every subreddit (e.g.: when user has set their settings to shuffle)
+     */
+    var futurePostsCache by gsonPref(
+        "future_posts",
+        PersistedFuturePosts.default()
+    )
 }

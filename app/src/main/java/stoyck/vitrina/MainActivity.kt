@@ -4,11 +4,9 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.TextWatcher
 import android.view.Menu
 import android.view.View
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.Switch
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -19,6 +17,7 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.content_subreddit_list.*
 import kotlinx.android.synthetic.main.content_subreddit_suggestion.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 import stoyck.vitrina.domain.MainViewModel
 import stoyck.vitrina.util.DebouncedTextWatcher
 import stoyck.vitrina.util.hideKeyboard
@@ -29,6 +28,12 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var viewModel: MainViewModel
+
+    // There is only add and they need to be removed eventually
+    // to make sure that only one of them exists
+    private var subredditInputTextWatcher: TextWatcher? = null
+    private var minimumImageWidthTextWatcher: TextWatcher? = null
+    private var minimumImageHeightTextWatcher: TextWatcher? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as VitrinaApplication).appComponent
@@ -95,42 +100,87 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupSettings() {
-        // Shuffle
-        val shuffleSwitch = navigationView
-            .menu
-            .findItem(R.id.settingsShuffle)
-            ?.actionView as? Switch ?: throw RuntimeException("shuffle not found")
-
-        // Over 18
-        val over18Switch = navigationView
-            .menu
-            .findItem(R.id.settingsOver18)
-            ?.actionView as? Switch ?: throw RuntimeException("over18 not found")
-
-        //
-
         shuffleSwitch.setOnCheckedChangeListener { _, isChecked ->
             val current = viewModel.preferencesState.value!!
             viewModel.updatePreferences(current.copy(shuffle = isChecked))
-        }
-        viewModel.preferencesState.observe(this) {
-            over18Switch.isChecked = it.isOver18
         }
 
         over18Switch.setOnCheckedChangeListener { _, isChecked ->
             val current = viewModel.preferencesState.value!!
             viewModel.updatePreferences(current.copy(isOver18 = isChecked))
         }
-        viewModel.preferencesState.observe(this) {
-            shuffleSwitch.isChecked = it.shuffle
+
+
+        val textWatcherMinWidth = this.minimumImageWidthTextWatcher
+        if (textWatcherMinWidth == null) {
+            val newTextWatcher = DebouncedTextWatcher(300L) { text ->
+                val newValue = text.toIntOrNull() ?: return@DebouncedTextWatcher
+
+                val current = viewModel.preferencesState.value!!
+                viewModel.updatePreferences(current.copy(minimumImageWidth = newValue))
+            }
+
+            this.minimumImageWidthTextWatcher = newTextWatcher
+            imageMinimumWidthInput.addTextChangedListener(newTextWatcher)
         }
 
-        val header = navigationView
-            .getHeaderView(0) as LinearLayout
+        val textWatcherMinHeight = this.minimumImageHeightTextWatcher
+        if (textWatcherMinHeight == null) {
+            val newTextWatcher = DebouncedTextWatcher(300L) { text ->
+                val newValue = text.toIntOrNull() ?: return@DebouncedTextWatcher
 
-        val leaveRatingButton = header.findViewById(R.id.goToStoreButton) as Button
+                val current = viewModel.preferencesState.value!!
+                viewModel.updatePreferences(current.copy(minimumImageHeight = newValue))
+            }
 
-        leaveRatingButton.setOnClickListener {
+            this.minimumImageHeightTextWatcher = newTextWatcher
+            imageMinimumHeightInput.addTextChangedListener(newTextWatcher)
+        }
+
+
+        viewModel.preferencesState.observe(this) {
+            if (it == null) {
+                return@observe
+            }
+
+            /**
+             * This is some complicated shit:
+             *
+             * ===
+             *
+             * Default data: (shuffle: true, over: false)
+             * Loaded data in settings: (shuffle: true, over: true)
+             *
+             * This is a problem, because the shuffle toggle will trigger saves
+             *
+             * Current issues:
+             * - different default data than what is saved
+             *      - this is the main issue, because it will copied from the toggle's callback
+             *          when saving
+             * - async load/save and only 1 thread
+             *      - task execution is posted, but the ordering of the coroutines change
+             *      - later load in the viewmodel than the first save triggered from checkbox
+             * - save is triggered, even when the same value is set in toggle
+             */
+
+            if (shuffleSwitch.isChecked != it.shuffle) {
+                shuffleSwitch.isChecked = it.shuffle
+            }
+
+            if (over18Switch.isChecked != it.isOver18) {
+                over18Switch.isChecked = it.isOver18
+            }
+
+            if (imageMinimumWidthInput.text?.toString()?.toIntOrNull() != it.minimumImageWidth) {
+                imageMinimumWidthInput.setText(it.minimumImageWidth.toString())
+            }
+
+            if (imageMinimumHeightInput.text?.toString()?.toIntOrNull() != it.minimumImageHeight) {
+                imageMinimumHeightInput.setText(it.minimumImageHeight.toString())
+            }
+        }
+
+        goToStoreButton.setOnClickListener {
             val appPackageName =
                 packageName // getPackageName() from Context or Activity object
 
@@ -151,9 +201,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val gotoGithubButton = header.findViewById(R.id.goToGithubButton) as Button
-
-        gotoGithubButton.setOnClickListener {
+        goToGithubButton.setOnClickListener {
             val browserIntent =
                 Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/andrasferenczi/vitrina"))
             startActivity(browserIntent)
@@ -172,10 +220,18 @@ class MainActivity : AppCompatActivity() {
                     toDefaultMenu()
                 }
 
-                subredditInputText.addTextChangedListener(
-                    DebouncedTextWatcher(300L) { text ->
+
+                // :( - beauty of a code in the non-declarative ui world
+                val textWatcher = this.subredditInputTextWatcher
+
+                if (textWatcher == null) {
+                    val newTextWatcher = DebouncedTextWatcher(300L) { text ->
                         viewModel.updateSuggestionList(text)
-                    })
+                    }
+
+                    this.subredditInputTextWatcher = newTextWatcher
+                    subredditInputText.addTextChangedListener(newTextWatcher)
+                }
 
                 subredditInputText.setOnEditorActionListener { view, id, event ->
                     val text = view.text.toString()

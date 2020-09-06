@@ -44,3 +44,7 @@ If disabled, artworks will be picked in the order they are specified on the list
 This is obvious.
 
 It affects the autocomplete feature in the search and what artworks will be served as your background.
+
+#### Minimum Image Resolution
+
+The minimum size of the image can be specified here. If an image does not meet the requirements for width and height, it will not be shown.

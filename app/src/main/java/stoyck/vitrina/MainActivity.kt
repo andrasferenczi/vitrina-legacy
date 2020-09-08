@@ -1,5 +1,6 @@
 package stoyck.vitrina
 
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -7,6 +8,7 @@ import android.os.Bundle
 import android.text.TextWatcher
 import android.view.Menu
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -97,6 +99,17 @@ class MainActivity : AppCompatActivity() {
         hideKeyboard()
         subredditInputText.setText("")
         viewModel.toDefaultMenu()
+    }
+
+
+    private fun toSearchMenu() {
+        viewModel.toSearchMenu()
+        subredditInputText?.let {
+            it.requestFocus()
+            val imm: InputMethodManager =
+                this.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(it, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
     private fun setupSettings() {
@@ -288,7 +301,7 @@ class MainActivity : AppCompatActivity() {
 
         addSubredditFab.visibility = View.VISIBLE
         addSubredditFab.setOnClickListener {
-            viewModel.toSearchMenu()
+            toSearchMenu()
         }
 
         setupDefaultToolbar()
@@ -301,7 +314,7 @@ class MainActivity : AppCompatActivity() {
                     menuInflater.inflate(R.menu.main_default, menu)
                     val search = menu.findItem(R.id.action_search)
                     search.setOnMenuItemClickListener {
-                        viewModel.toSearchMenu()
+                        toSearchMenu()
                         true
                     }
                 }

@@ -74,10 +74,11 @@ fun ProviderClient.removeArtworksById(context: Context, vararg artworks: Long) {
 
 /**
  * Why this is wrong:
- *
  * https://github.com/romannurik/muzei/issues/689#issuecomment-687668168
+ *
+ * But people want this feature:
+ * https://github.com/andrasferenczi/vitrina/issues/11#issue-735993486
  */
-@Deprecated("Do not remove old artworks automatically")
 fun ProviderClient.pruneOldArtworks(context: Context, maxCount: Int) {
     val artworks = readArtworks(context).sortedByDescending { it.dateAdded }
 

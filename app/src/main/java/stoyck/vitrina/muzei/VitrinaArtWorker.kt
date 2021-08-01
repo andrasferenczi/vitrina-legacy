@@ -9,6 +9,7 @@ import kotlinx.coroutines.withContext
 import stoyck.vitrina.BuildConfig
 import stoyck.vitrina.VitrinaApplication
 import stoyck.vitrina.domain.usecase.TryRetrieveNextMuzeiArtworkUseCase
+import stoyck.vitrina.muzei.ext.pruneOldArtworks
 import stoyck.vitrina.muzei.ext.retrieveVitrinaProviderClient
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -75,6 +76,7 @@ class VitrinaArtWorker(
         val provider = applicationContext.retrieveVitrinaProviderClient()
 
         loadNewArtworks(provider, 4)
+        provider.pruneOldArtworks(applicationContext, 16)
 
         return@withContext Result.success()
     }

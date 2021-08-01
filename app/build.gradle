@@ -2,12 +2,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.3"
 
     // switch to v26 if it still does not work
     // - earlier app breaks at an even later version
@@ -27,8 +24,8 @@ android {
         minSdkVersion 23
         targetSdkVersion 29
 
-        versionCode 32
-        versionName "1.0.32"
+        versionCode 34
+        versionName "1.0.34"
 
         testInstrumentationRunner "stoyck.vitrina.VitrinaTestRunner"
 
@@ -118,11 +115,6 @@ dependencies {
 
     // muzei
     implementation 'com.google.android.apps.muzei:muzei-api:3.4.0'
-
-    // firebase - crashlytics
-    // adding the analytics is recommended (?)
-    implementation 'com.google.firebase:firebase-analytics-ktx:17.5.0'
-    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
 
     // ====
     // test

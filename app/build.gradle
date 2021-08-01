@@ -2,8 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 29
@@ -117,11 +115,6 @@ dependencies {
 
     // muzei
     implementation 'com.google.android.apps.muzei:muzei-api:3.4.0'
-
-    // firebase - crashlytics
-    // adding the analytics is recommended (?)
-    implementation 'com.google.firebase:firebase-analytics-ktx:17.5.0'
-    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
 
     // ====
     // test

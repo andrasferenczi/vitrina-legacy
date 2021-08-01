@@ -7,7 +7,6 @@ apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.3"
 
     // switch to v26 if it still does not work
     // - earlier app breaks at an even later version

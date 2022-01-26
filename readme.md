@@ -1,3 +1,13 @@
+> Note:
+>
+> This is the code for the legacy version. You can still submit issues here, I will read them.
+>
+> If you are here because you want to reset your app's version to free one, [have a look at this issue](https://github.com/andrasferenczi/vitrina-legacy/issues/21).
+>
+> Also, check out the [website of the new app version](https://vitrina.gallery).
+
+---
+
 # Vitrina
 
 > A companion app for [Muzei](https://github.com/romannurik/muzei) that fetches images from Reddit.
